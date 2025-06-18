@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - Attachment System</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="main-container">
+    <div class="welcome-section" style="max-width: 400px; margin: 5rem auto;">
+        <h2>Register</h2>
+        <form>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" required />
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" required />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" required />
+            </div>
+            <button class="btn" type="submit">Register</button>
+            <p style="margin-top: 1rem;">Already registered? <a href="login.html">Login</a></p>
+        </form>
+    </div>
+</body>
+</html>
+
+<script>
+    document.querySelector("form").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        // Simulate account creation and login
+        localStorage.setItem("isLoggedIn", "true");
+
+        // Redirect to main page
+        window.location.href = "index.html";
+    });
+</script>
+

@@ -18,6 +18,7 @@
                 </div>
             </div>
             <div class="user-info">
+                <button class="btn btn-secondary" onclick="logout()" style="margin-left: 1rem;">Logout</button>
                 <div class="user-avatar">JD</div>
                 <div>
                     <div style="font-weight: 600;">John Doe</div>
@@ -26,6 +27,14 @@
             </div>
         </div>
     </header>
+
+    <script>
+    function logout() {
+        localStorage.removeItem("isLoggedIn");
+        window.location.href = "login.html";
+    }
+</script>
+
 
     <!-- Navigation -->
     <nav class="nav-menu">
@@ -239,6 +248,63 @@
         </div>
     </div>
 
+    <!-- Placements Section -->
+<div id="placements" class="section" style="display: none;">
+    <div class="placement-card">
+        <div class="placement-header">
+            <div class="company-info">
+                <h3>Safaricom PLC</h3>
+                <p>Software Development Intern</p>
+                <p>Start: Jan 15, 2025 | End: Apr 15, 2025</p>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 70%;"></div>
+            </div>
+        </div>
+        <p style="color: #666;">Your attachment is ongoing. Ensure your reports and evaluations are up to date.</p>
+    </div>
+</div>
+
+<!-- Reports Section -->
+<div id="reports" class="section" style="display: none;">
+    <div class="report-item">
+        <div class="report-header">
+            <h4>Week 1 - Submitted</h4>
+            <span class="report-date">Jan 20, 2025</span>
+        </div>
+        <p>Completed onboarding and initial training. Familiarized with internal tools.</p>
+    </div>
+    <!-- Add more report-item blocks as needed -->
+</div>
+
+<!-- Profile Section -->
+<div id="profile" class="section" style="display: none;">
+    <div class="profile-section">
+        <div class="profile-header">
+            <div class="profile-avatar">JD</div>
+            <div class="profile-info">
+                <h2>John Doe</h2>
+                <p>Student ID: SU123456</p>
+                <p>Email: john.doe@strathmore.edu</p>
+                <p>Course: BSc. Informatics</p>
+            </div>
+        </div>
+        <div class="info-grid">
+            <div class="info-card">
+                <h4>Contact</h4>
+                <div class="info-item"><span>Email:</span><span>john.doe@strathmore.edu</span></div>
+                <div class="info-item"><span>Phone:</span><span>+254 712 345678</span></div>
+            </div>
+            <div class="info-card">
+                <h4>Academic</h4>
+                <div class="info-item"><span>Year:</span><span>3rd</span></div>
+                <div class="info-item"><span>Department:</span><span>IT</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
     <!-- Report Modal -->
     <div id="reportModal" class="modal">
         <div class="modal-content">
@@ -289,6 +355,14 @@
     <footer class="footer">
         <p>&copy; 2025 Strathmore University. All rights reserved. | Attachment Management System v2.0</p>
     </footer>
+
+    <script>
+    // Redirect to login if not logged in
+    if (!localStorage.getItem("isLoggedIn")) {
+        window.location.href = "login.html";
+    }
+</script>
+
 
     <script>
         // Navigation functionality
