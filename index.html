@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Attachment System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="auth-body">
+  <div class="auth-container">
+    <h2>Login to Attachment System</h2>
+    <form action="student-dashboard.html" method="POST">
+      <label for="username">Username/Email:</label>
+      <input type="text" id="username" name="username" required />
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+      <label for="role">Login As:</label>
+      <select id="role" name="role">
+        <option value="student">Student</option>
+        <option value="school">School Supervisor</option>
+        <option value="host">Host Supervisor</option>
+        <option value="admin">Administrator</option>
+      </select>
+      <button type="submit">Login</button>
+      <p>Don't have an account? <a href="register.html">Register Here</a></p>
+    </form>
+  </div>
+</body>
+</html>
