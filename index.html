@@ -19,9 +19,10 @@
             </div>
             <div class="user-info">
                 <button class="btn btn-secondary" onclick="logout()" style="margin-left: 1rem;">Logout</button>
-                <div class="user-avatar">JD</div>
+                <div class="user-avatar">GK</div>
                 <div>
-                    <div style="font-weight: 600;">John Doe</div>
+                    
+                    <div id="userName" style="font-weight: 600;"></div>
                     <div style="font-size: 12px; opacity: 0.8;">Student</div>
                 </div>
             </div>
@@ -466,6 +467,17 @@
             });
         });
 
+        document.addEventListener('DOMContentLoaded', function () {
+    const userName = localStorage.getItem("fullName") || "User";
+    const initials = userName.split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase();
+
+    document.getElementById("userName").textContent = userName;
+
+    const avatar = document.querySelector(".user-avatar");
+    if (avatar) avatar.textContent = initials;
+});
+
+
         // Notification system
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
@@ -506,6 +518,9 @@
             }
         `;
         document.head.appendChild(style);
+
+
+        
     </script>
 </body>
 </html>

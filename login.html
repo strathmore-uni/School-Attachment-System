@@ -29,10 +29,13 @@
     document.querySelector("form").addEventListener("submit", function(e) {
         e.preventDefault();
 
-        // Simulate successful login
-        localStorage.setItem("isLoggedIn", "true");
+        // Simulate retrieval from DB (or user input)
+        const name = "John Doe"; // Replace with actual field if needed
 
-        // Redirect to main page
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("fullName", name);
+
         window.location.href = "index.html";
     });
 </script>
+

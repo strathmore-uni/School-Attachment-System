@@ -32,10 +32,11 @@
     document.querySelector("form").addEventListener("submit", function(e) {
         e.preventDefault();
 
-        // Simulate account creation and login
-        localStorage.setItem("isLoggedIn", "true");
+        const fullName = document.getElementById("fullName").value;
 
-        // Redirect to main page
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("fullName", fullName);
+
         window.location.href = "index.html";
     });
 </script>
