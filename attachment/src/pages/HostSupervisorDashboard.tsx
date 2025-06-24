@@ -10,10 +10,10 @@ import {
   FileText,
   TrendingUp
 } from 'lucide-react';
-import Layout from '@/components/Layout';
-import DashboardHeader from '@/components/DashboardHeader';
-import StatsCard from '@/components/StatsCard';
-import StudentCard from '@/components/StudentCard';
+import Layout from '@/components/shared/Layout';
+import DashboardHeader from '@/components/shared/DashboardHeader';
+import StatsCard from '@/components/shared/StatsCard';
+import StudentCard from '@/components/shared/StudentCard';
 
 function HostSupervisorDashboard() {
   const students = [

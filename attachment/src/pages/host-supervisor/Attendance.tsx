@@ -2,8 +2,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, CheckCircle, XCircle } from 'lucide-react';
-import Layout from '@/components/Layout';
-import DashboardHeader from '@/components/DashboardHeader';
+import Layout from '@/components/shared/Layout';
+import DashboardHeader from '@/components/shared/DashboardHeader';
 import { FileText } from 'lucide-react';
 
 const Attendance = () => {

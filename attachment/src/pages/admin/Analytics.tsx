@@ -1,10 +1,10 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '../../components/ui/progress';
 import { BarChart3, TrendingUp, Download, Calendar } from 'lucide-react';
-import Layout from '@/components/Layout';
-import DashboardHeader from '@/components/DashboardHeader';
+ import Layout from '../../components/Layout';
+import DashboardHeader from '../../components/DashboardHeader';
 
 const Analytics = () => {
   const performanceMetrics = [
