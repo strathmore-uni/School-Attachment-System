@@ -1,10 +1,8 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Settings as SettingsIcon, Shield, Users, Bell, Save } from 'lucide-react';
-import Layout from '../../components/Layout';
-import DashboardHeader from '../../components/DashboardHeader';
+import { Layout, DashboardHeader } from '../../components/shared';
 
 const Settings = () => {
   const systemSettings = [

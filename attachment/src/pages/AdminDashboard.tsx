@@ -1,7 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { 
   Users, 
   Building2, 
@@ -13,10 +13,7 @@ import {
   BarChart3,
   Plus
 } from 'lucide-react';
-import Layout from '@/components/Layout';
-import DashboardHeader from '@/components/DashboardHeader';
-import StatsCard from '@/components/StatsCard';
-import ApplicationCard from '@/components/ApplicationCard';
+import { Layout, DashboardHeader, StatsCard, ApplicationCard } from '../components/shared';
 
 const AdminDashboard = () => {
   const stats = [

@@ -1,7 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { 
   Users, 
   Clock, 
@@ -10,10 +10,10 @@ import {
   FileText,
   TrendingUp
 } from 'lucide-react';
-import Layout from '@/components/shared/Layout';
-import DashboardHeader from '@/components/shared/DashboardHeader';
-import StatsCard from '@/components/shared/StatsCard';
-import StudentCard from '@/components/shared/StudentCard';
+import Layout from '../components/shared/Layout';
+import DashboardHeader from '../components/shared/DashboardHeader';
+import StatsCard from '../components/shared/StatsCard';
+import StudentCard from '../components/shared/StudentCard';
 
 function HostSupervisorDashboard() {
   const students = [

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,10 +11,7 @@ import {
   User, 
   Target
 } from 'lucide-react';
-import Layout from '@/components/Layout';
-import DashboardHeader from '@/components/DashboardHeader';
-import StatsCard from '@/components/StatsCard';
-import ApplicationCard from '@/components/ApplicationCard';
+import { Layout, DashboardHeader, StatsCard, ApplicationCard } from '@/components/shared';
 
 const StudentDashboard = () => {
   const [activeApplications] = useState([

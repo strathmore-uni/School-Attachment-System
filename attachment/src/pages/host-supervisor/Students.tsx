@@ -1,11 +1,8 @@
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Users, TrendingUp, UserCheck, UserPlus } from 'lucide-react';
-import Layout from '@/components/Layout';
-import DashboardHeader from '@/components/DashboardHeader';
-import StudentCard from '@/components/StudentCard';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
+import { Users, UserPlus, Calendar, CheckCircle } from 'lucide-react';
+import { Layout, DashboardHeader, StudentCard } from '../../components/shared';
 
 const Students = () => {
   const assignedStudents = [

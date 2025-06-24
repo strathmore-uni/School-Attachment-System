@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '../ui/button';
+import { Avatar, AvatarFallback } from '../ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '../ui/dropdown-menu';
 import { 
   Home,
   FileText,
@@ -21,7 +21,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '../../hooks/use-toast';
 
 interface LayoutProps {
   children: React.ReactNode;

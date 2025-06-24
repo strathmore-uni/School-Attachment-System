@@ -1,11 +1,8 @@
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Badge } from '../../components/ui/badge';
 import { FileText, Eye, CheckCircle, XCircle } from 'lucide-react';
-import Layout from '@/components/Layout';
-import DashboardHeader from '@/components/DashboardHeader';
-import ApplicationCard from '@/components/ApplicationCard';
+import { Layout, DashboardHeader, ApplicationCard } from '../../components/shared';
 
 const Applications = () => {
   const applications = [
