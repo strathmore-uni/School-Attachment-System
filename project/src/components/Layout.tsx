@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -105,8 +104,12 @@ function Layout({ children }: LayoutProps) {
           {/* Logo */}
           <div className="flex items-center justify-between p-6 border-b">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">SU</span>
+              <div className="w-10 h-10 flex items-center justify-center">
+                <img 
+                  src="/StrathmoreLogo.png" 
+                  alt="Strathmore University" 
+                  className="w-10 h-10 object-contain"
+                />
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-gray-900">Strathmore University</span>

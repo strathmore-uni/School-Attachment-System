@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -59,8 +58,12 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-blue-600 rounded-lg mx-auto mb-4 flex items-center justify-center">
-            <span className="text-white font-bold text-xl">SU</span>
+          <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+            <img 
+              src="/StrathmoreLogo.png" 
+              alt="Strathmore University" 
+              className="w-20 h-20 object-contain"
+            />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Strathmore University</h1>
           <p className="text-gray-600">Attachment Management System</p>
