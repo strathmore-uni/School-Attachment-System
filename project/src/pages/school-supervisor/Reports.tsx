@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,8 +6,12 @@ import { Progress } from '@/components/ui/progress';
 import { BarChart3, TrendingUp, FileText, Download } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
+import ReviewReportForm from '@/components/forms/ReviewReportForm';
 
 const Reports = () => {
+  const [showReviewReportForm, setShowReviewReportForm] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<any>(null);
+
   const reportStats = [
     { title: "Technical Skills", average: 4.3, progress: 86 },
     { title: "Communication", average: 4.1, progress: 82 },
@@ -22,7 +26,13 @@ const Reports = () => {
       title: "Week 8 Progress Report",
       submittedDate: "2024-06-18",
       status: "Pending Review",
-      priority: "Normal"
+      priority: "Normal",
+      content: {
+        activities: "Worked on mobile app development using React Native",
+        achievements: "Successfully implemented user authentication",
+        challenges: "Had difficulty with state management",
+        learnings: "Learned about Redux for state management"
+      }
     },
     {
       id: 2,
@@ -30,7 +40,13 @@ const Reports = () => {
       title: "Week 7 Progress Report", 
       submittedDate: "2024-06-15",
       status: "Reviewed",
-      priority: "Normal"
+      priority: "Normal",
+      content: {
+        activities: "Analyzed business requirements for new banking system",
+        achievements: "Completed stakeholder interviews",
+        challenges: "Complex requirements gathering",
+        learnings: "Improved business analysis skills"
+      }
     },
     {
       id: 3,
@@ -38,7 +54,13 @@ const Reports = () => {
       title: "Week 6 Progress Report",
       submittedDate: "2024-06-10",
       status: "Overdue",
-      priority: "High"
+      priority: "High",
+      content: {
+        activities: "Provided customer support and technical assistance",
+        achievements: "Resolved 95% of customer issues",
+        challenges: "Handling difficult customers",
+        learnings: "Improved communication skills"
+      }
     }
   ];
 
@@ -60,6 +82,19 @@ const Reports = () => {
     }
   };
 
+  const handleGenerateReport = () => {
+    console.log('Generating report...');
+  };
+
+  const handleReviewReport = (data: any) => {
+    console.log('Report reviewed:', data);
+  };
+
+  const handleReviewReportClick = (report: any) => {
+    setSelectedReport(report);
+    setShowReviewReportForm(true);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -69,7 +104,7 @@ const Reports = () => {
           actionButton={{
             label: "Generate Report",
             icon: Download,
-            onClick: () => console.log('Generate report clicked')
+            onClick: handleGenerateReport
           }}
         />
 
@@ -192,7 +227,11 @@ const Reports = () => {
                     <Badge variant={getStatusBadgeVariant(report.status)}>
                       {report.status}
                     </Badge>
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleReviewReportClick(report)}
+                    >
                       Review
                     </Button>
                   </div>
@@ -201,6 +240,18 @@ const Reports = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showReviewReportForm && selectedReport && (
+          <ReviewReportForm
+            onClose={() => {
+              setShowReviewReportForm(false);
+              setSelectedReport(null);
+            }}
+            onSubmit={handleReviewReport}
+            report={selectedReport}
+          />
+        )}
       </div>
     </Layout>
   );

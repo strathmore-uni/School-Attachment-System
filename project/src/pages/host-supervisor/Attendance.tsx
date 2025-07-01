@@ -1,12 +1,15 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Clock, CheckCircle, XCircle, Plus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
-import { FileText } from 'lucide-react';
+import MarkAttendanceForm from '@/components/forms/MarkAttendanceForm';
 
 const Attendance = () => {
+  const [showMarkAttendanceForm, setShowMarkAttendanceForm] = useState(false);
+
   const todayAttendance = [
     {
       id: 1,
@@ -45,6 +48,10 @@ const Attendance = () => {
   const presentToday = todayAttendance.filter(a => a.status === 'Present').length;
   const totalStudents = todayAttendance.length;
 
+  const handleMarkAttendance = (data: any) => {
+    console.log('Attendance marked:', data);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -53,8 +60,8 @@ const Attendance = () => {
           description="Track and manage student attendance records"
           actionButton={{
             label: "Mark Attendance",
-            icon: FileText,
-            onClick: () => console.log('Mark attendance clicked')
+            icon: Plus,
+            onClick: () => setShowMarkAttendanceForm(true)
           }}
         />
 
@@ -164,6 +171,14 @@ const Attendance = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Forms */}
+        {showMarkAttendanceForm && (
+          <MarkAttendanceForm
+            onClose={() => setShowMarkAttendanceForm(false)}
+            onSubmit={handleMarkAttendance}
+          />
+        )}
       </div>
     </Layout>
   );

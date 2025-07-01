@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -35,6 +34,10 @@ const Analytics = () => {
     { month: "Jun", applications: 67, completions: 63 }
   ];
 
+  const handleExportReport = () => {
+    console.log('Exporting analytics report...');
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -44,7 +47,7 @@ const Analytics = () => {
           actionButton={{
             label: "Export Report",
             icon: Download,
-            onClick: () => console.log('Export report clicked')
+            onClick: handleExportReport
           }}
         />
 

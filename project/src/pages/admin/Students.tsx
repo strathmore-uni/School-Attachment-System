@@ -1,12 +1,15 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, UserCheck, UserX, UserPlus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
+import AddStudentForm from '@/components/forms/AddStudentForm';
 
 const Students = () => {
+  const [showAddStudentForm, setShowAddStudentForm] = useState(false);
+
   const students = [
     {
       id: 1,
@@ -54,6 +57,22 @@ const Students = () => {
   const activeCount = students.filter(s => s.status === 'Active').length;
   const inactiveCount = students.filter(s => s.status === 'Inactive').length;
 
+  const handleAddStudent = (data: any) => {
+    console.log('Student added:', data);
+  };
+
+  const handleViewProfile = (id: number) => {
+    console.log('View profile for student:', id);
+  };
+
+  const handleEditStudent = (id: number) => {
+    console.log('Edit student:', id);
+  };
+
+  const handleAssignStudent = (id: number) => {
+    console.log('Assign student:', id);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -63,7 +82,7 @@ const Students = () => {
           actionButton={{
             label: "Add Student",
             icon: UserPlus,
-            onClick: () => console.log('Add student clicked')
+            onClick: () => setShowAddStudentForm(true)
           }}
         />
 
@@ -144,13 +163,13 @@ const Students = () => {
                       Supervisor: {student.supervisor || 'Not assigned'}
                     </p>
                     <div className="space-x-2">
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleViewProfile(student.id)}>
                         View Profile
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleEditStudent(student.id)}>
                         Edit
                       </Button>
-                      <Button size="sm">
+                      <Button size="sm" onClick={() => handleAssignStudent(student.id)}>
                         Assign
                       </Button>
                     </div>
@@ -160,6 +179,14 @@ const Students = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showAddStudentForm && (
+          <AddStudentForm
+            onClose={() => setShowAddStudentForm(false)}
+            onSubmit={handleAddStudent}
+          />
+        )}
       </div>
     </Layout>
   );
