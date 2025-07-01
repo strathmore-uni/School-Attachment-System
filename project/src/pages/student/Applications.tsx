@@ -1,13 +1,18 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Building2, Calendar, Plus } from 'lucide-react';
+import { FileText, Building2, Calendar, Plus, Search } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
 import ApplicationCard from '@/components/ApplicationCard';
+import NewApplicationForm from '@/components/forms/NewApplicationForm';
+import SearchOrganizationsForm from '@/components/forms/SearchOrganizationsForm';
 
 const Applications = () => {
+  const [showNewApplicationForm, setShowNewApplicationForm] = useState(false);
+  const [showSearchOrganizationsForm, setShowSearchOrganizationsForm] = useState(false);
+
   const applications = [
     {
       id: 1,
@@ -35,6 +40,10 @@ const Applications = () => {
     }
   ];
 
+  const handleNewApplication = (data: any) => {
+    console.log('New application:', data);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -44,9 +53,16 @@ const Applications = () => {
           actionButton={{
             label: "New Application",
             icon: Plus,
-            onClick: () => console.log('New application clicked')
+            onClick: () => setShowNewApplicationForm(true)
           }}
         />
+
+        <div className="flex space-x-2 mb-4">
+          <Button variant="outline" onClick={() => setShowSearchOrganizationsForm(true)}>
+            <Search className="mr-2 h-4 w-4" />
+            Search Organizations
+          </Button>
+        </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
@@ -92,6 +108,20 @@ const Applications = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showNewApplicationForm && (
+          <NewApplicationForm
+            onClose={() => setShowNewApplicationForm(false)}
+            onSubmit={handleNewApplication}
+          />
+        )}
+
+        {showSearchOrganizationsForm && (
+          <SearchOrganizationsForm
+            onClose={() => setShowSearchOrganizationsForm(false)}
+          />
+        )}
       </div>
     </Layout>
   );

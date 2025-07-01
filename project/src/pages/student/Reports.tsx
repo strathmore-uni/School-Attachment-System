@@ -1,12 +1,15 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Calendar, Clock, Plus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
+import SubmitReportForm from '@/components/forms/SubmitReportForm';
 
 const Reports = () => {
+  const [showSubmitReportForm, setShowSubmitReportForm] = useState(false);
+
   const reports = [
     {
       id: 1,
@@ -39,6 +42,10 @@ const Reports = () => {
     }
   };
 
+  const handleSubmitReport = (data: any) => {
+    console.log('Report submitted:', data);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -48,7 +55,7 @@ const Reports = () => {
           actionButton={{
             label: "Submit Report",
             icon: Plus,
-            onClick: () => console.log('Submit report clicked')
+            onClick: () => setShowSubmitReportForm(true)
           }}
         />
 
@@ -117,6 +124,14 @@ const Reports = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showSubmitReportForm && (
+          <SubmitReportForm
+            onClose={() => setShowSubmitReportForm(false)}
+            onSubmit={handleSubmitReport}
+          />
+        )}
       </div>
     </Layout>
   );

@@ -1,12 +1,15 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Building2, MapPin, Users, Star, Search } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
+import SearchOrganizationsForm from '@/components/forms/SearchOrganizationsForm';
 
 const Organizations = () => {
+  const [showSearchOrganizationsForm, setShowSearchOrganizationsForm] = useState(false);
+
   const organizations = [
     {
       id: 1,
@@ -55,7 +58,7 @@ const Organizations = () => {
           actionButton={{
             label: "Search Organizations",
             icon: Search,
-            onClick: () => console.log('Search clicked')
+            onClick: () => setShowSearchOrganizationsForm(true)
           }}
         />
 
@@ -153,6 +156,13 @@ const Organizations = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showSearchOrganizationsForm && (
+          <SearchOrganizationsForm
+            onClose={() => setShowSearchOrganizationsForm(false)}
+          />
+        )}
       </div>
     </Layout>
   );

@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,8 +6,14 @@ import { Progress } from '@/components/ui/progress';
 import { Users, Star, TrendingUp, UserPlus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
+import AddStudentForm from '@/components/forms/AddStudentForm';
+import CreateEvaluationForm from '@/components/forms/CreateEvaluationForm';
 
 const Students = () => {
+  const [showAddStudentForm, setShowAddStudentForm] = useState(false);
+  const [showCreateEvaluationForm, setShowCreateEvaluationForm] = useState(false);
+  const [selectedStudentForEvaluation, setSelectedStudentForEvaluation] = useState('');
+
   const students = [
     {
       id: 1,
@@ -55,6 +61,19 @@ const Students = () => {
     }
   };
 
+  const handleAddStudent = (data: any) => {
+    console.log('Student added:', data);
+  };
+
+  const handleCreateEvaluation = (data: any) => {
+    console.log('Evaluation created:', data);
+  };
+
+  const handleEvaluateStudent = (studentName: string) => {
+    setSelectedStudentForEvaluation(studentName);
+    setShowCreateEvaluationForm(true);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -64,7 +83,7 @@ const Students = () => {
           actionButton={{
             label: "Add Student",
             icon: UserPlus,
-            onClick: () => console.log('Add student clicked')
+            onClick: () => setShowAddStudentForm(true)
           }}
         />
 
@@ -173,7 +192,7 @@ const Students = () => {
                       <Button size="sm" variant="outline">
                         View Profile
                       </Button>
-                      <Button size="sm">
+                      <Button size="sm" onClick={() => handleEvaluateStudent(student.name)}>
                         Evaluate
                       </Button>
                     </div>
@@ -183,6 +202,25 @@ const Students = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showAddStudentForm && (
+          <AddStudentForm
+            onClose={() => setShowAddStudentForm(false)}
+            onSubmit={handleAddStudent}
+          />
+        )}
+
+        {showCreateEvaluationForm && (
+          <CreateEvaluationForm
+            onClose={() => {
+              setShowCreateEvaluationForm(false);
+              setSelectedStudentForEvaluation('');
+            }}
+            onSubmit={handleCreateEvaluation}
+            studentName={selectedStudentForEvaluation}
+          />
+        )}
       </div>
     </Layout>
   );

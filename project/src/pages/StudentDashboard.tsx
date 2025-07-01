@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,14 +9,23 @@ import {
   FileText, 
   Building2, 
   User, 
-  Target
+  Target,
+  Plus,
+  Search
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
 import StatsCard from '@/components/StatsCard';
 import ApplicationCard from '@/components/ApplicationCard';
+import SubmitReportForm from '@/components/forms/SubmitReportForm';
+import NewApplicationForm from '@/components/forms/NewApplicationForm';
+import SearchOrganizationsForm from '@/components/forms/SearchOrganizationsForm';
 
 const StudentDashboard = () => {
+  const [showSubmitReportForm, setShowSubmitReportForm] = useState(false);
+  const [showNewApplicationForm, setShowNewApplicationForm] = useState(false);
+  const [showSearchOrganizationsForm, setShowSearchOrganizationsForm] = useState(false);
+
   const [activeApplications] = useState([
     {
       id: 1,
@@ -75,6 +83,14 @@ const StudentDashboard = () => {
 
   const daysCompleted = Math.round((new Date().getTime() - new Date(currentAttachment.startDate).getTime()) / (1000 * 60 * 60 * 24));
 
+  const handleSubmitReport = (data: any) => {
+    console.log('Report submitted:', data);
+  };
+
+  const handleNewApplication = (data: any) => {
+    console.log('Application submitted:', data);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -84,7 +100,7 @@ const StudentDashboard = () => {
           actionButton={{
             label: "Submit Report",
             icon: FileText,
-            onClick: () => console.log('Submit report clicked')
+            onClick: () => setShowSubmitReportForm(true)
           }}
         />
 
@@ -190,8 +206,22 @@ const StudentDashboard = () => {
           <TabsContent value="applications" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Application Status</CardTitle>
-                <CardDescription>Track your attachment applications</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Application Status</CardTitle>
+                    <CardDescription>Track your attachment applications</CardDescription>
+                  </div>
+                  <div className="space-x-2">
+                    <Button onClick={() => setShowSearchOrganizationsForm(true)} variant="outline">
+                      <Search className="mr-2 h-4 w-4" />
+                      Search Organizations
+                    </Button>
+                    <Button onClick={() => setShowNewApplicationForm(true)}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      New Application
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -206,8 +236,16 @@ const StudentDashboard = () => {
           <TabsContent value="reports" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Progress Reports</CardTitle>
-                <CardDescription>Your submitted reports and feedback</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Progress Reports</CardTitle>
+                    <CardDescription>Your submitted reports and feedback</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowSubmitReportForm(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Submit Report
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -265,6 +303,27 @@ const StudentDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Forms */}
+        {showSubmitReportForm && (
+          <SubmitReportForm
+            onClose={() => setShowSubmitReportForm(false)}
+            onSubmit={handleSubmitReport}
+          />
+        )}
+
+        {showNewApplicationForm && (
+          <NewApplicationForm
+            onClose={() => setShowNewApplicationForm(false)}
+            onSubmit={handleNewApplication}
+          />
+        )}
+
+        {showSearchOrganizationsForm && (
+          <SearchOrganizationsForm
+            onClose={() => setShowSearchOrganizationsForm(false)}
+          />
+        )}
       </div>
     </Layout>
   );
