@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.16.2"
+  },
+  "name": "school-attachment-system",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strathmore-uni/School-Attachment-System.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/strathmore-uni/School-Attachment-System/issues"
+  },
+  "homepage": "https://github.com/strathmore-uni/School-Attachment-System#readme",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
