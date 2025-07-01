@@ -19,19 +19,20 @@ import {
 } from "@/components/ui/select";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { useLogin } from "@/lib/auth/mutations";
+import { useRegister } from "@/lib/auth/mutations";
 
-const Login = () => {
+const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [userRole, setUserRole] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { mutateAsync: loginUser } = useLogin();
+  const { mutateAsync: registerUser } = useRegister();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!userRole || !email || !password) {
+    if (!userRole || !username || !email || !password) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -40,21 +41,22 @@ const Login = () => {
       return;
     }
 
-    const session = await loginUser({
+    const session = await registerUser({
       role: userRole,
+      name: username,
       email: email,
       password: password,
-    
     });
 
     if (!session) {
       console.log("No session found");
       return;
     }
+
     localStorage.setItem("userRole", userRole);
-    localStorage.setItem("email", email);
+    localStorage.setItem("username", username);
     toast({
-      title: "Login Successful",
+      title: "user created successfully",
       description: `Welcome to Strathmore Attachment System`,
     });
 
@@ -76,45 +78,6 @@ const Login = () => {
     }
   }
 
-  // const handleLogin = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (!userRole || !username || !password) {
-  //     toast({
-  //       title: "Error",
-  //       description: "Please fill in all fields",
-  //       variant: "destructive",
-  //     });
-  //     return;
-  //   }
-
-  //   // Store user role in localStorage for demo purposes
-  //   localStorage.setItem("userRole", userRole);
-  //   localStorage.setItem("username", username);
-
-  //   toast({
-  //     title: "Login Successful",
-  //     description: `Welcome to Strathmore Attachment System`,
-  //   });
-
-  //   // Navigate based on role
-  //   switch (userRole) {
-  //     case "student":
-  //       navigate("/student-dashboard");
-  //       break;
-  //     case "school-supervisor":
-  //       navigate("/school-supervisor-dashboard");
-  //       break;
-  //     case "host-supervisor":
-  //       navigate("/host-supervisor-dashboard");
-  //       break;
-  //     case "administrator":
-  //       navigate("/admin-dashboard");
-  //       break;
-  //     default:
-  //       navigate("/");
-  //   }
-  // };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -130,9 +93,9 @@ const Login = () => {
 
         <Card className="shadow-lg">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
+            <CardTitle className="text-2xl text-center">Register</CardTitle>
             <CardDescription className="text-center">
-              Enter your credentials to access the system
+              Enter your credentials Register
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -157,13 +120,24 @@ const Login = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
-                  type="text"
+                  type="email"
                   placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setUserEmail(e.target.value)}
                 />
               </div>
 
@@ -192,21 +166,22 @@ const Login = () => {
                   </Button>
                 </div>
               </div>
+
               <div className="flex flex-col">
                 <Button
                   type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700"
                 >
-                  Sign In
+                  Register
                 </Button>
 
                 <p>
-                  Don't have an account?
+                  Already have an account?
                   <Link
-                    to={"/register"}
-                    className="text-small-regular text-light-2 text-center mt-2"
+                    to={"/login"}
+                    className="text-small-regular text-light-2 text-center mt-2 underline"
                   >
-                    register
+                    login
                   </Link>
                 </p>
               </div>
@@ -218,4 +193,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
