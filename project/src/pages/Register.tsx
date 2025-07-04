@@ -58,7 +58,8 @@ const Register = () => {
     toast({
       title: "user created successfully",
       description: `Welcome to Strathmore Attachment System`,
-    });
+    }); 
+    // registration form update
 
     switch (userRole) {
       case "student":

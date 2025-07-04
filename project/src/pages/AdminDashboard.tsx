@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,14 +12,22 @@ import {
   Clock, 
   AlertTriangle,
   BarChart3,
-  Plus
+  Plus,
+  Eye,
+  XCircle,
+  Download
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
 import StatsCard from '@/components/StatsCard';
 import ApplicationCard from '@/components/ApplicationCard';
+import AddOrganizationForm from '@/components/forms/AddOrganizationForm';
+import AddStudentForm from '@/components/forms/AddStudentForm';
 
 const AdminDashboard = () => {
+  const [showAddOrganizationForm, setShowAddOrganizationForm] = useState(false);
+  const [showAddStudentForm, setShowAddStudentForm] = useState(false);
+
   const stats = [
     {
       title: "Total Students",
@@ -118,6 +127,30 @@ const AdminDashboard = () => {
     console.log('Reviewing application:', id);
   };
 
+  const handleApprove = (id: number) => {
+    console.log('Approving application:', id);
+  };
+
+  const handleReject = (id: number) => {
+    console.log('Rejecting application:', id);
+  };
+
+  const handleViewAll = () => {
+    console.log('View all applications');
+  };
+
+  const handleAddOrganization = (data: any) => {
+    console.log('Organization added:', data);
+  };
+
+  const handleAddStudent = (data: any) => {
+    console.log('Student added:', data);
+  };
+
+  const handleExportReport = () => {
+    console.log('Exporting report...');
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -127,12 +160,12 @@ const AdminDashboard = () => {
           actionButton={{
             label: "Add Organization",
             icon: Plus,
-            onClick: () => console.log('Add organization clicked')
+            onClick: () => setShowAddOrganizationForm(true)
           }}
         />
 
         <div className="flex space-x-2 mb-4">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportReport}>
             <BarChart3 className="mr-2 h-4 w-4" />
             Generate Report
           </Button>
@@ -155,6 +188,8 @@ const AdminDashboard = () => {
         <Tabs defaultValue="applications" className="space-y-4">
           <TabsList>
             <TabsTrigger value="applications">Recent Applications</TabsTrigger>
+            <TabsTrigger value="students">Students</TabsTrigger>
+            <TabsTrigger value="organizations">Organizations</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="alerts">System Alerts</TabsTrigger>
           </TabsList>
@@ -162,19 +197,122 @@ const AdminDashboard = () => {
           <TabsContent value="applications" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Applications</CardTitle>
-                <CardDescription>Latest attachment applications requiring review</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Recent Applications</CardTitle>
+                    <CardDescription>Latest attachment applications requiring review</CardDescription>
+                  </div>
+                  <Button onClick={handleViewAll}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    View All
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {recentApplications.map((application) => (
-                    <ApplicationCard
-                      key={application.id}
-                      application={application}
-                      showReviewButton={true}
-                      onReview={handleReview}
-                    />
+                    <div key={application.id} className="p-4 border rounded-lg">
+                      <ApplicationCard
+                        application={application}
+                        showReviewButton={true}
+                        onReview={handleReview}
+                      />
+                      {application.status === 'Pending Review' && (
+                        <div className="flex space-x-2 mt-4">
+                          <Button size="sm" onClick={() => handleApprove(application.id)}>
+                            <CheckCircle className="mr-1 h-4 w-4" />
+                            Approve
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleReject(application.id)}>
+                            <XCircle className="mr-1 h-4 w-4" />
+                            Reject
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="students" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Student Management</CardTitle>
+                    <CardDescription>Manage all students in the system</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowAddStudentForm(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Student
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold">Alice Wanjiku</h4>
+                        <p className="text-sm text-muted-foreground">ID: 154789</p>
+                        <p className="text-sm text-muted-foreground">alice.wanjiku@student.strathmore.edu</p>
+                      </div>
+                      <div className="space-x-2">
+                        <Button size="sm" variant="outline">
+                          View Profile
+                        </Button>
+                        <Button size="sm" variant="outline">
+                          Edit
+                        </Button>
+                        <Button size="sm">
+                          Assign
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="organizations" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Organization Management</CardTitle>
+                    <CardDescription>Manage partner organizations</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowAddOrganizationForm(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Organization
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold">Safaricom PLC</h4>
+                        <p className="text-sm text-muted-foreground">Telecommunications</p>
+                        <p className="text-sm text-muted-foreground">5/10 students assigned</p>
+                      </div>
+                      <div className="space-x-2">
+                        <Button size="sm" variant="outline">
+                          View Details
+                        </Button>
+                        <Button size="sm" variant="outline">
+                          Edit
+                        </Button>
+                        <Button size="sm">
+                          Manage Students
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -184,8 +322,16 @@ const AdminDashboard = () => {
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>Attachment Types Distribution</CardTitle>
-                  <CardDescription>Work-Based vs Service-Based Learning</CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Attachment Types Distribution</CardTitle>
+                      <CardDescription>Work-Based vs Service-Based Learning</CardDescription>
+                    </div>
+                    <Button onClick={handleExportReport}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Export Report
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -268,6 +414,21 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Forms */}
+        {showAddOrganizationForm && (
+          <AddOrganizationForm
+            onClose={() => setShowAddOrganizationForm(false)}
+            onSubmit={handleAddOrganization}
+          />
+        )}
+
+        {showAddStudentForm && (
+          <AddStudentForm
+            onClose={() => setShowAddStudentForm(false)}
+            onSubmit={handleAddStudent}
+          />
+        )}
       </div>
     </Layout>
   );

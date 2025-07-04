@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -59,6 +59,10 @@ const Applications = () => {
     console.log('Rejecting application:', id);
   };
 
+  const handleViewAll = () => {
+    console.log('View all applications');
+  };
+
   const pendingCount = applications.filter(app => app.status === 'Pending Review').length;
   const approvedCount = applications.filter(app => app.status === 'Approved').length;
   const underReviewCount = applications.filter(app => app.status === 'Under Review').length;
@@ -72,7 +76,7 @@ const Applications = () => {
           actionButton={{
             label: "View All",
             icon: Eye,
-            onClick: () => console.log('View all clicked')
+            onClick: handleViewAll
           }}
         />
 

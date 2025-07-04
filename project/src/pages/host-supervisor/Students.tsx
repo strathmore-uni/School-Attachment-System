@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,8 +6,12 @@ import { Users, TrendingUp, UserCheck, UserPlus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
 import StudentCard from '@/components/StudentCard';
+import CreateEvaluationForm from '@/components/forms/CreateEvaluationForm';
 
 const Students = () => {
+  const [showCreateEvaluationForm, setShowCreateEvaluationForm] = useState(false);
+  const [selectedStudentForEvaluation, setSelectedStudentForEvaluation] = useState('');
+
   const assignedStudents = [
     {
       id: 1,
@@ -59,7 +63,19 @@ const Students = () => {
   };
 
   const handleEvaluate = (id: number) => {
-    console.log('Evaluate student:', id);
+    const student = assignedStudents.find(s => s.id === id);
+    if (student) {
+      setSelectedStudentForEvaluation(student.name);
+      setShowCreateEvaluationForm(true);
+    }
+  };
+
+  const handleCreateEvaluation = (data: any) => {
+    console.log('Evaluation created:', data);
+  };
+
+  const handleAssignStudent = () => {
+    console.log('Assign student clicked');
   };
 
   return (
@@ -71,7 +87,7 @@ const Students = () => {
           actionButton={{
             label: "Assign Student",
             icon: UserPlus,
-            onClick: () => console.log('Assign student clicked')
+            onClick: handleAssignStudent
           }}
         />
 
@@ -135,6 +151,18 @@ const Students = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showCreateEvaluationForm && (
+          <CreateEvaluationForm
+            onClose={() => {
+              setShowCreateEvaluationForm(false);
+              setSelectedStudentForEvaluation('');
+            }}
+            onSubmit={handleCreateEvaluation}
+            studentName={selectedStudentForEvaluation}
+          />
+        )}
       </div>
     </Layout>
   );

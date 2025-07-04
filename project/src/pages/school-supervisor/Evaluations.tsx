@@ -1,12 +1,16 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, FileText, Clock, Plus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
+import CreateEvaluationForm from '@/components/forms/CreateEvaluationForm';
 
 const Evaluations = () => {
+  const [showCreateEvaluationForm, setShowCreateEvaluationForm] = useState(false);
+  const [selectedStudentForEvaluation, setSelectedStudentForEvaluation] = useState('');
+
   const upcomingEvaluations = [
     {
       id: 1,
@@ -50,6 +54,15 @@ const Evaluations = () => {
     }
   ];
 
+  const handleCreateEvaluation = (data: any) => {
+    console.log('Evaluation created:', data);
+  };
+
+  const handleStartEvaluation = (studentName: string) => {
+    setSelectedStudentForEvaluation(studentName);
+    setShowCreateEvaluationForm(true);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -59,7 +72,7 @@ const Evaluations = () => {
           actionButton={{
             label: "New Evaluation",
             icon: Plus,
-            onClick: () => console.log('New evaluation clicked')
+            onClick: () => setShowCreateEvaluationForm(true)
           }}
         />
 
@@ -131,7 +144,7 @@ const Evaluations = () => {
                         <Calendar className="h-4 w-4" />
                         <span>Due: {evaluation.dueDate}</span>
                       </div>
-                      <Button size="sm">
+                      <Button size="sm" onClick={() => handleStartEvaluation(evaluation.studentName)}>
                         Start Evaluation
                       </Button>
                     </div>
@@ -170,6 +183,18 @@ const Evaluations = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Forms */}
+        {showCreateEvaluationForm && (
+          <CreateEvaluationForm
+            onClose={() => {
+              setShowCreateEvaluationForm(false);
+              setSelectedStudentForEvaluation('');
+            }}
+            onSubmit={handleCreateEvaluation}
+            studentName={selectedStudentForEvaluation}
+          />
+        )}
       </div>
     </Layout>
   );

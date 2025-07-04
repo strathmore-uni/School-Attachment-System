@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,8 +6,12 @@ import { Progress } from '@/components/ui/progress';
 import { Star, Plus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
+import CreateEvaluationForm from '@/components/forms/CreateEvaluationForm';
 
 function Evaluations() {
+  const [showCreateEvaluationForm, setShowCreateEvaluationForm] = useState(false);
+  const [selectedStudentForEvaluation, setSelectedStudentForEvaluation] = useState('');
+
   const evaluations = [
     {
       id: 1,
@@ -78,6 +82,15 @@ function Evaluations() {
   const averageRating = (evaluations.reduce((sum, e) => sum + e.overallRating, 0) / evaluations.length).toFixed(1);
   const topPerformers = evaluations.filter(e => e.overallRating >= 4.5).length;
 
+  const handleCreateEvaluation = (data: any) => {
+    console.log('Evaluation created:', data);
+  };
+
+  const handleStartEvaluation = (studentName: string) => {
+    setSelectedStudentForEvaluation(studentName);
+    setShowCreateEvaluationForm(true);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -87,7 +100,7 @@ function Evaluations() {
           actionButton={{
             label: "New Evaluation",
             icon: Plus,
-            onClick: () => console.log('New evaluation clicked')
+            onClick: () => setShowCreateEvaluationForm(true)
           }}
         />
 
@@ -172,7 +185,10 @@ function Evaluations() {
                       <p className="text-sm text-muted-foreground">{evaluation.type}</p>
                       <p className="text-xs text-muted-foreground">Due: {evaluation.dueDate}</p>
                     </div>
-                    <Button size="sm">
+                    <Button 
+                      size="sm"
+                      onClick={() => handleStartEvaluation(evaluation.studentName)}
+                    >
                       Start Evaluation
                     </Button>
                   </div>
@@ -229,6 +245,18 @@ function Evaluations() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showCreateEvaluationForm && (
+          <CreateEvaluationForm
+            onClose={() => {
+              setShowCreateEvaluationForm(false);
+              setSelectedStudentForEvaluation('');
+            }}
+            onSubmit={handleCreateEvaluation}
+            studentName={selectedStudentForEvaluation}
+          />
+        )}
       </div>
     </Layout>
   );

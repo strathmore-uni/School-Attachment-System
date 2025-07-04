@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,11 +12,21 @@ import {
   AlertCircle,
   Star,
   TrendingUp,
-  Calendar
+  Calendar,
+  Plus,
+  Download
 } from 'lucide-react';
 import Layout from '@/components/Layout';
+import CreateEvaluationForm from '@/components/forms/CreateEvaluationForm';
+import AddStudentForm from '@/components/forms/AddStudentForm';
+import ReviewReportForm from '@/components/forms/ReviewReportForm';
 
 const SchoolSupervisorDashboard = () => {
+  const [showCreateEvaluationForm, setShowCreateEvaluationForm] = useState(false);
+  const [showAddStudentForm, setShowAddStudentForm] = useState(false);
+  const [showReviewReportForm, setShowReviewReportForm] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<any>(null);
+
   const supervisedStudents = [
     {
       id: 1,
@@ -63,7 +73,13 @@ const SchoolSupervisorDashboard = () => {
       title: "Week 8 Progress Report",
       submittedDate: "2024-06-18",
       status: "Pending Review",
-      priority: "Normal"
+      priority: "Normal",
+      content: {
+        activities: "Worked on mobile app development using React Native",
+        achievements: "Successfully implemented user authentication",
+        challenges: "Had difficulty with state management",
+        learnings: "Learned about Redux for state management"
+      }
     },
     {
       id: 2,
@@ -71,7 +87,13 @@ const SchoolSupervisorDashboard = () => {
       title: "Week 7 Progress Report", 
       submittedDate: "2024-06-15",
       status: "Reviewed",
-      priority: "Normal"
+      priority: "Normal",
+      content: {
+        activities: "Analyzed business requirements for new banking system",
+        achievements: "Completed stakeholder interviews",
+        challenges: "Complex requirements gathering",
+        learnings: "Improved business analysis skills"
+      }
     },
     {
       id: 3,
@@ -79,7 +101,13 @@ const SchoolSupervisorDashboard = () => {
       title: "Week 6 Progress Report",
       submittedDate: "2024-06-10",
       status: "Overdue",
-      priority: "High"
+      priority: "High",
+      content: {
+        activities: "Provided customer support and technical assistance",
+        achievements: "Resolved 95% of customer issues",
+        challenges: "Handling difficult customers",
+        learnings: "Improved communication skills"
+      }
     }
   ];
 
@@ -130,6 +158,31 @@ const SchoolSupervisorDashboard = () => {
     }
   };
 
+  const handleCreateEvaluation = (data: any) => {
+    console.log('Evaluation created:', data);
+  };
+
+  const handleAddStudent = (data: any) => {
+    console.log('Student added:', data);
+  };
+
+  const handleReviewReport = (data: any) => {
+    console.log('Report reviewed:', data);
+  };
+
+  const handleStartEvaluation = (studentName: string) => {
+    setShowCreateEvaluationForm(true);
+  };
+
+  const handleReviewReportClick = (report: any) => {
+    setSelectedReport(report);
+    setShowReviewReportForm(true);
+  };
+
+  const handleGenerateReport = () => {
+    console.log('Generating report...');
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -140,7 +193,7 @@ const SchoolSupervisorDashboard = () => {
               Monitor and evaluate your supervised students
             </p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setShowCreateEvaluationForm(true)}>
             <FileText className="mr-2 h-4 w-4" />
             Create Evaluation
           </Button>
@@ -214,8 +267,16 @@ const SchoolSupervisorDashboard = () => {
           <TabsContent value="students" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Supervised Students</CardTitle>
-                <CardDescription>Students under your supervision</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Supervised Students</CardTitle>
+                    <CardDescription>Students under your supervision</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowAddStudentForm(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Student
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -276,7 +337,7 @@ const SchoolSupervisorDashboard = () => {
                           <Button size="sm" variant="outline">
                             View Profile
                           </Button>
-                          <Button size="sm">
+                          <Button size="sm" onClick={() => handleStartEvaluation(student.name)}>
                             Evaluate
                           </Button>
                         </div>
@@ -291,8 +352,16 @@ const SchoolSupervisorDashboard = () => {
           <TabsContent value="reports" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Student Reports</CardTitle>
-                <CardDescription>Progress reports requiring your review</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Student Reports</CardTitle>
+                    <CardDescription>Progress reports requiring your review</CardDescription>
+                  </div>
+                  <Button onClick={handleGenerateReport}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Generate Report
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -314,7 +383,11 @@ const SchoolSupervisorDashboard = () => {
                         <Badge variant={getStatusBadgeVariant(report.status)}>
                           {report.status}
                         </Badge>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleReviewReportClick(report)}
+                        >
                           Review
                         </Button>
                       </div>
@@ -328,8 +401,16 @@ const SchoolSupervisorDashboard = () => {
           <TabsContent value="evaluations" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Upcoming Evaluations</CardTitle>
-                <CardDescription>Scheduled evaluations for your students</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Upcoming Evaluations</CardTitle>
+                    <CardDescription>Scheduled evaluations for your students</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowCreateEvaluationForm(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    New Evaluation
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -344,7 +425,11 @@ const SchoolSupervisorDashboard = () => {
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-medium">Due: {evaluation.dueDate}</p>
-                        <Button size="sm" className="mt-2">
+                        <Button 
+                          size="sm" 
+                          className="mt-2"
+                          onClick={() => handleStartEvaluation(evaluation.studentName)}
+                        >
                           Start Evaluation
                         </Button>
                       </div>
@@ -410,6 +495,32 @@ const SchoolSupervisorDashboard = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Forms */}
+        {showCreateEvaluationForm && (
+          <CreateEvaluationForm
+            onClose={() => setShowCreateEvaluationForm(false)}
+            onSubmit={handleCreateEvaluation}
+          />
+        )}
+
+        {showAddStudentForm && (
+          <AddStudentForm
+            onClose={() => setShowAddStudentForm(false)}
+            onSubmit={handleAddStudent}
+          />
+        )}
+
+        {showReviewReportForm && selectedReport && (
+          <ReviewReportForm
+            onClose={() => {
+              setShowReviewReportForm(false);
+              setSelectedReport(null);
+            }}
+            onSubmit={handleReviewReport}
+            report={selectedReport}
+          />
+        )}
       </div>
     </Layout>
   );

@@ -1,12 +1,15 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Building2, MapPin, Users, Star, Plus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
+import AddOrganizationForm from '@/components/forms/AddOrganizationForm';
 
 const Organizations = () => {
+  const [showAddOrganizationForm, setShowAddOrganizationForm] = useState(false);
+
   const organizations = [
     {
       id: 1,
@@ -76,6 +79,22 @@ const Organizations = () => {
   const totalCapacity = organizations.reduce((sum, org) => sum + org.totalCapacity, 0);
   const totalActiveStudents = organizations.reduce((sum, org) => sum + org.activeStudents, 0);
 
+  const handleAddOrganization = (data: any) => {
+    console.log('Organization added:', data);
+  };
+
+  const handleViewDetails = (id: number) => {
+    console.log('View details for organization:', id);
+  };
+
+  const handleEditOrganization = (id: number) => {
+    console.log('Edit organization:', id);
+  };
+
+  const handleManageStudents = (id: number) => {
+    console.log('Manage students for organization:', id);
+  };
+
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -85,7 +104,7 @@ const Organizations = () => {
           actionButton={{
             label: "Add Organization",
             icon: Plus,
-            onClick: () => console.log('Add organization clicked')
+            onClick: () => setShowAddOrganizationForm(true)
           }}
         />
 
@@ -185,13 +204,13 @@ const Organizations = () => {
                       Phone: {org.phone}
                     </p>
                     <div className="space-x-2">
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleViewDetails(org.id)}>
                         View Details
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleEditOrganization(org.id)}>
                         Edit
                       </Button>
-                      <Button size="sm">
+                      <Button size="sm" onClick={() => handleManageStudents(org.id)}>
                         Manage Students
                       </Button>
                     </div>
@@ -201,6 +220,14 @@ const Organizations = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showAddOrganizationForm && (
+          <AddOrganizationForm
+            onClose={() => setShowAddOrganizationForm(false)}
+            onSubmit={handleAddOrganization}
+          />
+        )}
       </div>
     </Layout>
   );

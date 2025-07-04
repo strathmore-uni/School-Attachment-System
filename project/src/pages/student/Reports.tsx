@@ -1,12 +1,17 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Calendar, Clock, Plus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
+import SubmitReportForm from '@/components/forms/SubmitReportForm';
+import { useSubmitReport } from '@/lib/reports/mutations';
 
 const Reports = () => {
+  const [showSubmitReportForm, setShowSubmitReportForm] = useState(false);
+  const { mutateAsync: submitReport } = useSubmitReport();
+
   const reports = [
     {
       id: 1,
@@ -31,12 +36,29 @@ const Reports = () => {
     }
   ];
 
+
   const getStatusVariant = (status: string) => {
     switch (status) {
       case 'Reviewed': return 'default';
       case 'Pending Review': return 'secondary';
       default: return 'secondary';
     }
+  };
+
+  async function handleSubmitReport (data: any)  {
+    const report = await submitReport({
+      report_title: data.report_title,
+      content: data.content,
+      week_number: data.week_number,
+      activities: data.activities,
+      achievements: data.achievements,
+      challenges: data.challenges,
+      key_learnings: data.key_learnings,
+      next_week_plans: data.next_week_plans,
+      student_id: data.student_id,
+    });
+    setShowSubmitReportForm(false);
+    console.log('Report submitted:', report);
   };
 
   return (
@@ -48,7 +70,7 @@ const Reports = () => {
           actionButton={{
             label: "Submit Report",
             icon: Plus,
-            onClick: () => console.log('Submit report clicked')
+            onClick: () => setShowSubmitReportForm(true)
           }}
         />
 
@@ -117,6 +139,14 @@ const Reports = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Forms */}
+        {showSubmitReportForm && (
+          <SubmitReportForm
+            onClose={() => setShowSubmitReportForm(false)}
+            onSubmit={handleSubmitReport}
+          />
+        )}
       </div>
     </Layout>
   );

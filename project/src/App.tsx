@@ -10,6 +10,8 @@ import SchoolSupervisorDashboard from "./pages/SchoolSupervisorDashboard";
 import HostSupervisorDashboard from "./pages/HostSupervisorDashboard";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import React, { useState, useEffect } from "react";
+import { getAdminDashboard, getStudentDashboard, getSupervisorDashboard, getUserProfile } from "@/lib/auth/api";
 
 // Student pages
 import StudentApplications from "./pages/student/Applications";
@@ -62,7 +64,49 @@ function HomePage() {
   return <Navigate to="/login" replace />;
 }
 
-function App() {
+// function App() {
+  // user state
+  const App: React.FC = () => {
+  const [user, setUser] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      const stored = localStorage.getItem("user");
+      if (!stored) {
+        setLoading(false);
+        return;
+      }
+      const u = JSON.parse(stored);
+      setUser(u);
+      try {
+        let data: any;
+        switch (u.role) {
+          case "admin":
+            data = await getAdminDashboard();
+            break;
+          case "student":
+            data = await getStudentDashboard();
+            break;
+          case "school_supervisor":
+          case "host_supervisor":
+            data = await getSupervisorDashboard();
+            break;
+          default:
+            data = await getUserProfile();
+        }
+        setDashboardData(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

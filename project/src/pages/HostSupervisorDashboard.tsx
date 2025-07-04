@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,14 +9,23 @@ import {
   CheckCircle, 
   Calendar,
   FileText,
-  TrendingUp
+  TrendingUp,
+  Plus,
+  UserPlus
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
 import StatsCard from '@/components/StatsCard';
 import StudentCard from '@/components/StudentCard';
+import MarkAttendanceForm from '@/components/forms/MarkAttendanceForm';
+import CreateEvaluationForm from '@/components/forms/CreateEvaluationForm';
 
 function HostSupervisorDashboard() {
+  const [showMarkAttendanceForm, setShowMarkAttendanceForm] = useState(false);
+  const [showCreateEvaluationForm, setShowCreateEvaluationForm] = useState(false);
+  const [showAssignStudentForm, setShowAssignStudentForm] = useState(false);
+  const [selectedStudentForEvaluation, setSelectedStudentForEvaluation] = useState<string>('');
+
   const students = [
     {
       id: 1,
@@ -83,6 +93,21 @@ function HostSupervisorDashboard() {
     }
   ];
 
+  const pendingEvaluations = [
+    {
+      id: 1,
+      studentName: "Alice Wanjiku",
+      type: "Bi-weekly Review",
+      dueDate: "2024-06-25"
+    },
+    {
+      id: 2,
+      studentName: "John Kamau",
+      type: "Skills Assessment",
+      dueDate: "2024-06-28"
+    }
+  ];
+
   const averageAttendance = Math.round(
     students.reduce((acc, student) => acc + student.attendanceRate, 0) / students.length
   );
@@ -94,7 +119,28 @@ function HostSupervisorDashboard() {
   }
 
   function handleEvaluate(id: number) {
-    console.log('Evaluate student:', id);
+    const student = students.find(s => s.id === id);
+    if (student) {
+      setSelectedStudentForEvaluation(student.name);
+      setShowCreateEvaluationForm(true);
+    }
+  }
+
+  function handleMarkAttendance(data: any) {
+    console.log('Attendance marked:', data);
+  }
+
+  function handleCreateEvaluation(data: any) {
+    console.log('Evaluation created:', data);
+  }
+
+  function handleAssignStudent(data: any) {
+    console.log('Student assigned:', data);
+  }
+
+  function handleStartEvaluation(studentName: string) {
+    setSelectedStudentForEvaluation(studentName);
+    setShowCreateEvaluationForm(true);
   }
 
   return (
@@ -106,7 +152,7 @@ function HostSupervisorDashboard() {
           actionButton={{
             label: "Record Attendance",
             icon: FileText,
-            onClick: () => console.log('Record attendance clicked')
+            onClick: () => setShowMarkAttendanceForm(true)
           }}
         />
 
@@ -135,7 +181,7 @@ function HostSupervisorDashboard() {
           />
           <StatsCard
             title="Pending Evaluations"
-            value="2"
+            value={pendingEvaluations.length.toString()}
             change="Due this week"
             icon={Calendar}
             iconColor="text-muted-foreground"
@@ -152,8 +198,16 @@ function HostSupervisorDashboard() {
           <TabsContent value="students" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Assigned Students</CardTitle>
-                <CardDescription>Students under your supervision</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Assigned Students</CardTitle>
+                    <CardDescription>Students under your supervision</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowAssignStudentForm(true)}>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Assign Student
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -174,8 +228,16 @@ function HostSupervisorDashboard() {
           <TabsContent value="attendance" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Today's Attendance</CardTitle>
-                <CardDescription>Student check-in and check-out records</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Today's Attendance</CardTitle>
+                    <CardDescription>Student check-in and check-out records</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowMarkAttendanceForm(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Mark Attendance
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -206,36 +268,91 @@ function HostSupervisorDashboard() {
           </TabsContent>
 
           <TabsContent value="evaluations" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Evaluations</CardTitle>
-                <CardDescription>Performance evaluations for your students</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentEvaluations.map((evaluation) => (
-                    <div key={evaluation.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <h4 className="font-semibold">{evaluation.studentName}</h4>
-                        <p className="text-sm text-muted-foreground">{evaluation.evaluationType}</p>
-                        <p className="text-xs text-muted-foreground">Date: {evaluation.date}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm font-semibold">{evaluation.overallRating}/5</span>
-                          <Badge variant="default">{evaluation.status}</Badge>
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Pending Evaluations</CardTitle>
+                      <CardDescription>Evaluations that need to be completed</CardDescription>
+                    </div>
+                    <Button onClick={() => setShowCreateEvaluationForm(true)}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      New Evaluation
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {pendingEvaluations.map((evaluation) => (
+                      <div key={evaluation.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <h4 className="font-semibold">{evaluation.studentName}</h4>
+                          <p className="text-sm text-muted-foreground">{evaluation.type}</p>
+                          <p className="text-xs text-muted-foreground">Due: {evaluation.dueDate}</p>
                         </div>
-                        <Button size="sm" variant="outline" className="mt-2">
-                          View Details
+                        <Button 
+                          size="sm"
+                          onClick={() => handleStartEvaluation(evaluation.studentName)}
+                        >
+                          Start Evaluation
                         </Button>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Evaluations</CardTitle>
+                  <CardDescription>Performance evaluations for your students</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {recentEvaluations.map((evaluation) => (
+                      <div key={evaluation.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="flex-1">
+                          <h4 className="font-semibold">{evaluation.studentName}</h4>
+                          <p className="text-sm text-muted-foreground">{evaluation.evaluationType}</p>
+                          <p className="text-xs text-muted-foreground">Date: {evaluation.date}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm font-semibold">{evaluation.overallRating}/5</span>
+                            <Badge variant="default">{evaluation.status}</Badge>
+                          </div>
+                          <Button size="sm" variant="outline" className="mt-2">
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
+
+        {/* Forms */}
+        {showMarkAttendanceForm && (
+          <MarkAttendanceForm
+            onClose={() => setShowMarkAttendanceForm(false)}
+            onSubmit={handleMarkAttendance}
+          />
+        )}
+
+        {showCreateEvaluationForm && (
+          <CreateEvaluationForm
+            onClose={() => {
+              setShowCreateEvaluationForm(false);
+              setSelectedStudentForEvaluation('');
+            }}
+            onSubmit={handleCreateEvaluation}
+            studentName={selectedStudentForEvaluation}
+          />
+        )}
       </div>
     </Layout>
   );
