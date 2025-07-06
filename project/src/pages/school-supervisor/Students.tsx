@@ -8,50 +8,14 @@ import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
 import AddStudentForm from '@/components/forms/AddStudentForm';
 import CreateEvaluationForm from '@/components/forms/CreateEvaluationForm';
+import { useSupervisorStudents } from '@/lib/hooks/useStudents';
 
 const Students = () => {
   const [showAddStudentForm, setShowAddStudentForm] = useState(false);
   const [showCreateEvaluationForm, setShowCreateEvaluationForm] = useState(false);
   const [selectedStudentForEvaluation, setSelectedStudentForEvaluation] = useState('');
 
-  const students = [
-    {
-      id: 1,
-      name: "Alice Wanjiku",
-      studentId: "154789",
-      organization: "Safaricom PLC",
-      position: "Software Engineer Intern",
-      startDate: "2024-07-01",
-      progress: 75,
-      lastReportDate: "2024-06-18",
-      status: "Active",
-      overallRating: 4.2
-    },
-    {
-      id: 2,
-      name: "John Kamau",
-      studentId: "154790",
-      organization: "Kenya Commercial Bank",
-      position: "Business Analyst Intern",
-      startDate: "2024-07-01",
-      progress: 60,
-      lastReportDate: "2024-06-15",
-      status: "Active",
-      overallRating: 3.8
-    },
-    {
-      id: 3,
-      name: "Mary Akinyi",
-      studentId: "154791",
-      organization: "Equity Bank",
-      position: "IT Support Intern",
-      startDate: "2024-07-01",
-      progress: 45,
-      lastReportDate: "2024-06-10",
-      status: "Needs Attention",
-      overallRating: 3.5
-    }
-  ];
+  const { data: students = [], isLoading, isError } = useSupervisorStudents();
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -73,6 +37,13 @@ const Students = () => {
     setSelectedStudentForEvaluation(studentName);
     setShowCreateEvaluationForm(true);
   };
+
+  if (isLoading) {
+    return <Layout><div className="p-8 text-center">Loading students...</div></Layout>;
+  }
+  if (isError) {
+    return <Layout><div className="p-8 text-center text-red-500">Failed to load students.</div></Layout>;
+  }
 
   return (
     <Layout>

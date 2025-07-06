@@ -1,15 +1,15 @@
 import custAxios from "@/hooks/custAxios";
 
 export async function createReport(report: {
-    title: string;
+    report_title: string;
     content: string;
     week_number: number;
-    activities: string[];
-    achievements: string[];
-    challenges: string[];
-    key_learnings: string[];
-    next_week_plans: string[];
-    student_id: string;
+    activities: string;
+    achievements: string;
+    challenges: string;
+    key_learnings: string;
+    next_week_plans: string;
+    attatchment_url: string;
 }) {
     try {
         const result = await custAxios.post("/reports/create-report", report);

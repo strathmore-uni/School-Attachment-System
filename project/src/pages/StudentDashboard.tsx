@@ -20,75 +20,85 @@ import ApplicationCard from '@/components/ApplicationCard';
 import SubmitReportForm from '@/components/forms/SubmitReportForm';
 import NewApplicationForm from '@/components/forms/NewApplicationForm';
 import SearchOrganizationsForm from '@/components/forms/SearchOrganizationsForm';
+import { toast } from '@/hooks/use-toast';
+import { useStudentDashboard } from '@/lib/hooks/useStudents';
+import { useCreateApplication, useStudentApplications } from '@/lib/hooks/useApplications';
+import { useCreateReport } from '@/lib/hooks/useReports';
 
 const StudentDashboard = () => {
   const [showSubmitReportForm, setShowSubmitReportForm] = useState(false);
   const [showNewApplicationForm, setShowNewApplicationForm] = useState(false);
   const [showSearchOrganizationsForm, setShowSearchOrganizationsForm] = useState(false);
+  const { mutateAsync: submitReport } = useCreateReport();
+  const { mutateAsync: createApplication } = useCreateApplication();
+  // API hooks
+  const { data: dashboardData, isLoading: dashboardLoading } = useStudentDashboard();
+  const { data: activeApplications, isLoading: applicationsLoading } = useStudentApplications();
 
-  const [activeApplications] = useState([
-    {
-      id: 1,
-      organization: 'Kenya Commercial Bank',
-      position: 'IT Intern',
-      status: 'Under Review',
-      appliedDate: '2024-06-15',
-      type: 'SBL'
-    },
-    {
-      id: 2,
-      organization: 'Safaricom PLC',
-      position: 'Software Development Intern',
-      status: 'Approved',
-      appliedDate: '2024-06-10',
-      type: 'WBL'
+  // Calculate days completed if we have current attachment data
+  const daysCompleted = dashboardData?.currentAttachment 
+    ? Math.round((new Date().getTime() - new Date(dashboardData.currentAttachment.start_date).getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+
+
+  async function handleSubmitReport(data: any) {
+    try {
+      const reportData = {
+        report_title: data.report_title,
+        activities: data.activities,
+        achievements: data.achievements,
+        challenges: data.challenges,
+        key_learnings: data.key_learnings,
+        next_weeks_plans: data.next_week_plans,
+        attachment_url: data.attachment_url,
+        week_number: parseInt(data.week_number)
+      };
+      
+      console.log("Submitting report data:", reportData);
+
+      await submitReport(reportData);
+      toast({
+        title: "Success",
+        description: "Report submitted successfully",
+      });
+      setShowSubmitReportForm(false);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit report",
+        variant: "destructive",
+      });
     }
-  ]);
+  }
 
-  const [currentAttachment] = useState({
-    organization: 'Safaricom PLC',
-    position: 'Software Development Intern',
-    startDate: '2024-07-01',
-    endDate: '2024-09-30',
-    progress: 65,
-    schoolSupervisor: 'Dr. Jane Wanjiku',
-    hostSupervisor: 'John Kamau',
-    reportsSubmitted: 8,
-    totalReports: 12
-  });
+  const handleNewApplication = async (data: any) => {
+    try{
+    const applicationData = {
+      organization_id: data.organization_id,
+      position: data.position,
+      attachment_type: data.attachment_type,
+      start_date: data.start_date,
+      end_date: data.end_date,
+      motivation: data.motivation,
+      skills: data.skills,
+      experience: data.experience,
+      availability: data.availability
+    };
 
-  const [recentReports] = useState([
-    {
-      id: 1,
-      title: 'Week 8 Progress Report',
-      submittedDate: '2024-06-18',
-      status: 'Reviewed',
-      feedback: 'Excellent progress on mobile app development'
-    },
-    {
-      id: 2,
-      title: 'Week 7 Progress Report',
-      submittedDate: '2024-06-11',
-      status: 'Reviewed',
-      feedback: 'Good understanding of React Native concepts'
-    },
-    {
-      id: 3,
-      title: 'Week 6 Progress Report',
-      submittedDate: '2024-06-04',
-      status: 'Pending Review',
-      feedback: null
+    await createApplication(applicationData);
+    setShowNewApplicationForm(false);
+
+          toast({
+        title: "Success",
+        description: "Application submitted successfully",
+      });}
+    catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit application",
+        variant: "destructive",
+      });
     }
-  ]);
-
-  const daysCompleted = Math.round((new Date().getTime() - new Date(currentAttachment.startDate).getTime()) / (1000 * 60 * 60 * 24));
-
-  const handleSubmitReport = (data: any) => {
-    console.log('Report submitted:', data);
-  };
-
-  const handleNewApplication = (data: any) => {
-    console.log('Application submitted:', data);
   };
 
   return (
@@ -106,34 +116,47 @@ const StudentDashboard = () => {
 
         {/* Quick Stats */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatsCard
-            title="Active Applications"
-            value={activeApplications.length.toString()}
-            change="+1 from last month"
-            icon={Building2}
-            iconColor="text-muted-foreground"
-          />
-          <StatsCard
-            title="Attachment Progress"
-            value={`${currentAttachment.progress}%`}
-            change={`${daysCompleted} days completed`}
-            icon={Target}
-            iconColor="text-muted-foreground"
-          />
-          <StatsCard
-            title="Reports Submitted"
-            value={`${currentAttachment.reportsSubmitted}/${currentAttachment.totalReports}`}
-            change={`${currentAttachment.totalReports - currentAttachment.reportsSubmitted} remaining`}
-            icon={FileText}
-            iconColor="text-muted-foreground"
-          />
-          <StatsCard
-            title="Overall Rating"
-            value="4.2/5"
-            change="Based on supervisor feedback"
-            icon={User}
-            iconColor="text-muted-foreground"
-          />
+          {dashboardLoading ? (
+            // Loading skeleton
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="p-6 border rounded-lg animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+              </div>
+            ))
+          ) : (
+            <>
+              <StatsCard
+                title="Active Applications"
+                value={activeApplications?.length?.toString() || "0"}
+                change="+1 from last month"
+                icon={Building2}
+                iconColor="text-muted-foreground"
+              />
+              <StatsCard
+                title="Attachment Progress"
+                value={dashboardData?.currentAttachment ? `${dashboardData.currentAttachment.progress}%` : "0%"}
+                change={`${daysCompleted} days completed`}
+                icon={Target}
+                iconColor="text-muted-foreground"
+              />
+              <StatsCard
+                title="Reports Submitted"
+                value={dashboardData?.currentAttachment ? `${dashboardData.currentAttachment.reportsSubmitted}/${dashboardData.currentAttachment.totalReports}` : "0/0"}
+                change={dashboardData?.currentAttachment ? `${dashboardData.currentAttachment.totalReports - dashboardData.currentAttachment.reportsSubmitted} remaining` : "No attachment"}
+                icon={FileText}
+                iconColor="text-muted-foreground"
+              />
+              <StatsCard
+                title="Overall Rating"
+                value={dashboardData?.overallRating ? `${dashboardData.overallRating}/5` : "0/5"}
+                change="Based on supervisor feedback"
+                icon={User}
+                iconColor="text-muted-foreground"
+              />
+            </>
+          )}
         </div>
 
         <Tabs defaultValue="overview" className="space-y-4">
@@ -152,25 +175,33 @@ const StudentDashboard = () => {
                   <CardDescription>Your ongoing attachment details</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Building2 className="h-4 w-4 text-blue-600" />
-                    <span className="font-semibold">{currentAttachment.organization}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <User className="h-4 w-4 text-gray-500" />
-                    <span>{currentAttachment.position}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span>{currentAttachment.startDate} - {currentAttachment.endDate}</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Progress</span>
-                      <span className="text-sm text-muted-foreground">{currentAttachment.progress}%</span>
+                  {dashboardData?.currentAttachment ? (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        <Building2 className="h-4 w-4 text-blue-600" />
+                        <span className="font-semibold">{dashboardData.currentAttachment.organization}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <User className="h-4 w-4 text-gray-500" />
+                        <span>{dashboardData.currentAttachment.position}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <span>{dashboardData.currentAttachment.start_date} - {dashboardData.currentAttachment.end_date}</span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Progress</span>
+                          <span className="text-sm text-muted-foreground">{dashboardData.currentAttachment.progress}%</span>
+                        </div>
+                        <Progress value={dashboardData.currentAttachment.progress} className="h-2" />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      No active attachment found
                     </div>
-                    <Progress value={currentAttachment.progress} className="h-2" />
-                  </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -180,24 +211,32 @@ const StudentDashboard = () => {
                   <CardDescription>Your assigned supervisors</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <span className="text-sm font-medium">School Supervisor</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <User className="h-4 w-4 text-blue-600" />
+                  {dashboardData?.currentAttachment ? (
+                    <>
+                      <div className="space-y-2">
+                        <span className="text-sm font-medium">School Supervisor</span>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <User className="h-4 w-4 text-blue-600" />
+                          </div>
+                          <span>{dashboardData.currentAttachment.schoolSupervisor}</span>
+                        </div>
                       </div>
-                      <span>{currentAttachment.schoolSupervisor}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <span className="text-sm font-medium">Host Supervisor</span>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <User className="h-4 w-4 text-green-600" />
+                      <div className="space-y-2">
+                        <span className="text-sm font-medium">Host Supervisor</span>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <User className="h-4 w-4 text-green-600" />
+                          </div>
+                          <span>{dashboardData.currentAttachment.hostSupervisor}</span>
+                        </div>
                       </div>
-                      <span>{currentAttachment.hostSupervisor}</span>
+                    </>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      No supervisor information available
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -225,9 +264,24 @@ const StudentDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {activeApplications.map((application) => (
-                    <ApplicationCard key={application.id} application={application} />
-                  ))}
+                  {applicationsLoading ? (
+                    // Loading skeleton
+                    Array.from({ length: 2 }).map((_, index) => (
+                      <div key={index} className="p-4 border rounded-lg animate-pulse">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                      </div>
+                    ))
+                  ) : activeApplications && activeApplications.length > 0 ? (
+                    activeApplications.map((application) => (
+                      <ApplicationCard key={application.id} application={application} />
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      No applications found
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -249,20 +303,26 @@ const StudentDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentReports.map((report) => (
-                    <div key={report.id} className="flex items-start justify-between p-4 border rounded-lg">
-                      <div className="space-y-2">
-                        <h4 className="font-semibold">{report.title}</h4>
-                        <p className="text-sm text-muted-foreground">Submitted: {report.submittedDate}</p>
-                        {report.feedback && (
-                          <p className="text-sm text-green-600">{report.feedback}</p>
-                        )}
+                  {dashboardData?.recentReports && dashboardData.recentReports.length > 0 ? (
+                    dashboardData.recentReports.map((report) => (
+                      <div key={report.id} className="flex items-start justify-between p-4 border rounded-lg">
+                        <div className="space-y-2">
+                          <h4 className="font-semibold">{report.title}</h4>
+                          <p className="text-sm text-muted-foreground">Submitted: {report.submittedDate}</p>
+                          {report.feedback && (
+                            <p className="text-sm text-green-600">{report.feedback}</p>
+                          )}
+                        </div>
+                        <Badge variant={report.status === 'Reviewed' ? 'default' : 'secondary'}>
+                          {report.status}
+                        </Badge>
                       </div>
-                      <Badge variant={report.status === 'Reviewed' ? 'default' : 'secondary'}>
-                        {report.status}
-                      </Badge>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      No reports found
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>

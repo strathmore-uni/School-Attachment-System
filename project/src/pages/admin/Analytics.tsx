@@ -13,7 +13,7 @@ const Analytics = () => {
     { title: "Report Submission Rate", value: 88, trend: "+3%", color: "bg-yellow-500" }
   ];
 
-  const attachmentTypes = [
+  const attachment_types = [
     { type: "Work-Based Learning (WBL)", count: 68, percentage: 68 },
     { type: "Service-Based Learning (SBL)", count: 32, percentage: 32 }
   ];
@@ -76,7 +76,7 @@ const Analytics = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {attachmentTypes.map((type, index) => (
+                {attachment_types.map((type, index) => (
                   <div key={index}>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">{type.type}</span>

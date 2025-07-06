@@ -8,7 +8,7 @@ interface Student {
   studentId: string;
   department: string;
   position: string;
-  startDate: string;
+  start_date: string;
   attendanceRate: number;
   status: string;
   lastCheckIn?: string;
@@ -51,7 +51,7 @@ const StudentCard = ({ student, showAttendanceDetails = false, onViewDetails, on
         </div>
         <div>
           <p className="text-sm font-medium">Start Date</p>
-          <p className="text-sm text-muted-foreground">{student.startDate}</p>
+          <p className="text-sm text-muted-foreground">{student.start_date}</p>
         </div>
       </div>
 

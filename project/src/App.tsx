@@ -11,7 +11,7 @@ import HostSupervisorDashboard from "./pages/HostSupervisorDashboard";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import React, { useState, useEffect } from "react";
-import { getAdminDashboard, getStudentDashboard, getSupervisorDashboard, getUserProfile } from "@/lib/auth/api";
+import { getAdminDashboard, getStudentDashboard, getSchoolSupervisorDashboard, getHostSupervisorDashboard, getUserProfile } from "@/lib/auth/api";
 
 // Student pages
 import StudentApplications from "./pages/student/Applications";
@@ -90,8 +90,10 @@ function HomePage() {
             data = await getStudentDashboard();
             break;
           case "school_supervisor":
+            data = await getSchoolSupervisorDashboard();
+            break;
           case "host_supervisor":
-            data = await getSupervisorDashboard();
+            data = await getHostSupervisorDashboard();
             break;
           default:
             data = await getUserProfile();

@@ -40,69 +40,62 @@ const Login = () => {
       return;
     }
 
-    const session = await loginUser({
-      role: userRole,
-      email: email,
-      password: password,
-    
-    });
+    try {
+      const {user, token} = await loginUser({
+        role: userRole,
+        email: email,
+        password: password,
+      });
 
-    if (!session) {
-      console.log("No session found");
-      return;
-    }
-    localStorage.setItem("userRole", userRole);
-    localStorage.setItem("email", email);
-    toast({
-      title: "Login Successful",
-      description: `Welcome to Strathmore Attachment System`,
-    });
+      console.log("User data:", user);
 
-    switch (userRole) {
-      case "student":
-        navigate("/student-dashboard");
-        break;
-      case "school-supervisor":
-        navigate("/school-supervisor-dashboard");
-        break;
-      case "host-supervisor":
-        navigate("/host-supervisor-dashboard");
-        break;
-      case "administrator":
-        navigate("/admin-dashboard");
-        break;
-      default:
-        navigate("/");
+      if (!user || !token) {
+        toast({
+          title: "Login Failed",
+          description: "Invalid credentials. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Store user data in localStorage
+      localStorage.setItem("userRole", userRole);
+      localStorage.setItem("email", email);
+      localStorage.setItem("userId", user.id.toString());
+      localStorage.setItem("userName", user.name);
+      localStorage.setItem("token", token);
+
+      toast({
+        title: "Login Successful",
+        description: `Welcome ${user.name} to Strathmore Attachment System`,
+      });
+
+      // Navigate based on role
+      switch (userRole) {
+        case "student":
+          navigate("/student-dashboard");
+          break;
+        case "school-supervisor":
+          navigate("/school-supervisor-dashboard");
+          break;
+        case "host-supervisor":
+          navigate("/host-supervisor-dashboard");
+          break;
+        case "administrator":
+          navigate("/admin-dashboard");
+          break;
+        default:
+          navigate("/");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "An error occurred during login",
+        variant: "destructive",
+      });
     }
   }
-const handleLogin = async (formData) => {
-  const { role, email, password } = formData;
-  const response = await fetch("/api/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ role, email, password }),
-  });
-  const data = await response.json();
-  if (response.ok) {
-    // Handle successful login
-    localStorage.setItem("userRole", role);
-    localStorage.setItem("email", email);
-    toast({
-      title: "Login Successful",
-      description: `Welcome to Strathmore Attachment System`,
-    });
-    navigate(`/${role}-dashboard`);
-  } else {
-    // Handle login error
-    toast({
-      title: "Login Failed",
-      description: data.message || "Please check your credentials",
-      variant: "destructive",
-    });
-  }
-};
+
   //       description: "Please fill in all fields",
   //       variant: "destructive",
   //     });
@@ -166,17 +159,13 @@ const handleLogin = async (formData) => {
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
                 <Select value={userRole} onValueChange={setUserRole}>
-                  <SelectTrigger>
+                  <SelectTrigger aria-label="Select your role" id="role" name="role" autoCorrect="role">
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="student">Student</SelectItem>
-                    <SelectItem value="school-supervisor">
-                      School Supervisor
-                    </SelectItem>
-                    <SelectItem value="host-supervisor">
-                      Host Supervisor
-                    </SelectItem>
+                    <SelectItem value="school_supervisor">School Supervisor</SelectItem>
+                    <SelectItem value="host_supervisor">Host Supervisor</SelectItem>
                     <SelectItem value="administrator">Administrator</SelectItem>
                   </SelectContent>
                 </Select>
@@ -186,10 +175,12 @@ const handleLogin = async (formData) => {
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="text"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
                 />
               </div>
 
@@ -198,10 +189,12 @@ const handleLogin = async (formData) => {
                 <div className="relative">
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
                   />
                   <Button
                     type="button"
@@ -209,6 +202,7 @@ const handleLogin = async (formData) => {
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />

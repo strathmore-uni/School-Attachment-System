@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,24 +51,24 @@ const Profile = () => {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" placeholder="Enter your first name" />
+                  <Input id="firstName" name="firstName" placeholder="Enter your first name" autoComplete="given-name" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" placeholder="Enter your last name" />
+                  <Input id="lastName" name="lastName" placeholder="Enter your last name" autoComplete="family-name" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" placeholder="Enter your email" />
+                <Input id="email" name="email" type="email" placeholder="Enter your email" autoComplete="email" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" placeholder="Enter your phone number" />
+                <Input id="phone" name="phone" placeholder="Enter your phone number" autoComplete="tel" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
-                <Input id="role" value={userRole.replace('-', ' ')} disabled className="bg-gray-100" />
+                <Input id="role" name="role" value={userRole.replace('-', ' ')} disabled className="bg-gray-100" autoComplete="off" />
               </div>
             </CardContent>
           </Card>
@@ -84,16 +83,16 @@ const Profile = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="currentPassword">Current Password</Label>
-                <Input id="currentPassword" type="password" placeholder="Enter current password" />
+                <Input id="currentPassword" name="currentPassword" type="password" placeholder="Enter current password" autoComplete="current-password" />
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">New Password</Label>
-                  <Input id="newPassword" type="password" placeholder="Enter new password" />
+                  <Input id="newPassword" name="newPassword" type="password" placeholder="Enter new password" autoComplete="new-password" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input id="confirmPassword" type="password" placeholder="Confirm new password" />
+                  <Input id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm new password" autoComplete="new-password" />
                 </div>
               </div>
               <Button>Update Password</Button>

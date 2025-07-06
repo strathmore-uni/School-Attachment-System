@@ -41,41 +41,46 @@ const Register = () => {
       return;
     }
 
-    const session = await registerUser({
-      role: userRole,
-      name: username,
-      email: email,
-      password: password,
-    });
-
-    if (!session) {
-      console.log("No session found");
-      return;
-    }
-
-    localStorage.setItem("userRole", userRole);
-    localStorage.setItem("username", username);
-    toast({
-      title: "user created successfully",
-      description: `Welcome to Strathmore Attachment System`,
-    }); 
-    // registration form update
-
-    switch (userRole) {
-      case "student":
-        navigate("/student-dashboard");
-        break;
-      case "school-supervisor":
-        navigate("/school-supervisor-dashboard");
-        break;
-      case "host-supervisor":
-        navigate("/host-supervisor-dashboard");
-        break;
-      case "administrator":
-        navigate("/admin-dashboard");
-        break;
-      default:
-        navigate("/");
+    try {
+      const session = await registerUser({
+        role: userRole,
+        name: username,
+        email: email,
+        password: password,
+      });
+      if (!session) {
+        console.log("No session found");
+        return;
+      }
+      localStorage.setItem("userRole", userRole);
+      localStorage.setItem("username", username);
+      toast({
+        title: "User created successfully",
+        description: `Welcome to Strathmore Attachment System`,
+      });
+      // registration form update
+      switch (userRole) {
+        case "student":
+          navigate("/student-dashboard");
+          break;
+        case "school_supervisor":
+          navigate("/school-supervisor-dashboard");
+          break;
+        case "host_supervisor":
+          navigate("/host-supervisor-dashboard");
+          break;
+        case "administrator":
+          navigate("/admin-dashboard");
+          break;
+        default:
+          navigate("/");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Registration Failed",
+        description: error.message || "An error occurred during registration.",
+        variant: "destructive",
+      });
     }
   }
 
@@ -104,17 +109,13 @@ const Register = () => {
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
                 <Select value={userRole} onValueChange={setUserRole}>
-                  <SelectTrigger>
+                  <SelectTrigger aria-label="Select your role" id="role" name="role" autocomplete="role">
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="student">Student</SelectItem>
-                    <SelectItem value="school-supervisor">
-                      School Supervisor
-                    </SelectItem>
-                    <SelectItem value="host-supervisor">
-                      Host Supervisor
-                    </SelectItem>
+                    <SelectItem value="school_supervisor">School Supervisor</SelectItem>
+                    <SelectItem value="host_supervisor">Host Supervisor</SelectItem>
                     <SelectItem value="administrator">Administrator</SelectItem>
                   </SelectContent>
                 </Select>
@@ -124,10 +125,12 @@ const Register = () => {
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
+                  name="username"
                   type="text"
                   placeholder="Enter your username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="username"
                 />
               </div>
 
@@ -135,10 +138,12 @@ const Register = () => {
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setUserEmail(e.target.value)}
+                  autoComplete="email"
                 />
               </div>
 
@@ -147,10 +152,12 @@ const Register = () => {
                 <div className="relative">
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
                   />
                   <Button
                     type="button"
@@ -158,6 +165,7 @@ const Register = () => {
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />

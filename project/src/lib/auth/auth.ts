@@ -2,7 +2,7 @@ import custAxios from "@/hooks/custAxios";
 
  type LoginResponse = {
   token: string;
-  userData: {
+  user: {
     id: number;
     name: string;
     email: string;
@@ -10,15 +10,22 @@ import custAxios from "@/hooks/custAxios";
   };
 };
 
-export async function loginUser(user: {role: string; email: string; password: string }) :Promise<LoginResponse | undefined> {
+type Response = {
+  success: boolean;
+  message: string;
+  data: LoginResponse;
+}
+
+export async function loginUser(userData: {role: string; email: string; password: string }) {
   try {
-    const res = await custAxios.post<LoginResponse>("/auth/login", user);
+    const res = await custAxios.post<Response>("/auth/login", userData);
     console.log(res);
-    const { token, userData  } = res.data;
-localStorage.setItem("token", token);
-    return { token, userData };
+    const { user, token } = res.data.data;
+    
+    localStorage.setItem("token", token);
+    return {user, token};
   } catch (error) {
-    console.error("error in login");
+    console.error("error in login: ", error);
   }
 }
 
@@ -32,8 +39,12 @@ export async function registerUser(user: {
     const res = await custAxios.post("/auth/create-user", user);
     console.log(res);
     return res.data;
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    }
     console.error("error in login");
+    throw new Error("Registration failed");
   }
 }
 export async function getUser() {

@@ -23,92 +23,64 @@ import StatsCard from '@/components/StatsCard';
 import ApplicationCard from '@/components/ApplicationCard';
 import AddOrganizationForm from '@/components/forms/AddOrganizationForm';
 import AddStudentForm from '@/components/forms/AddStudentForm';
+import { toast } from '@/hooks/use-toast';
+import { 
+  useDashboardStats, 
+  useRecentApplications, 
+  useSystemAlerts, 
+  useStudents, 
+  useOrganizations, 
+  useAnalytics, 
+  useExportReport 
+} from '@/lib/hooks/useDashboard';
+import { useApproveApplication, useRejectApplication } from '@/lib/hooks/useApplications';
 
 const AdminDashboard = () => {
   const [showAddOrganizationForm, setShowAddOrganizationForm] = useState(false);
   const [showAddStudentForm, setShowAddStudentForm] = useState(false);
 
-  const stats = [
+  // API hooks
+  const { data: dashboardStats, isLoading: statsLoading } = useDashboardStats();
+  const { data: recentApplications, isLoading: applicationsLoading } = useRecentApplications();
+  // const { data: systemAlerts, isLoading: alertsLoading } = useSystemAlerts();
+  const { data: students, isLoading: studentsLoading } = useStudents();
+  const { data: organizations, isLoading: organizationsLoading } = useOrganizations();
+  const { data: analytics, isLoading: analyticsLoading } = useAnalytics();
+  const exportReportMutation = useExportReport();
+  const approveApplicationMutation = useApproveApplication();
+  const rejectApplicationMutation = useRejectApplication();
+
+  // Transform stats data
+  const stats = dashboardStats ? [
     {
       title: "Total Students",
-      value: "1,234",
+      value: dashboardStats.totalStudents.toString(),
       change: "+12%",
       icon: Users,
       color: "text-blue-600"
     },
     {
       title: "Active Attachments",
-      value: "456",
+      value: dashboardStats.activeAttachments.toString(),
       change: "+8%",
       icon: FileText,
       color: "text-green-600"
     },
     {
       title: "Partner Organizations",
-      value: "89",
+      value: dashboardStats.partnerOrganizations.toString(),
       change: "+3%",
       icon: Building2,
       color: "text-purple-600"
     },
     {
       title: "Completion Rate",
-      value: "94%",
+      value: `${dashboardStats.completionRate}%`,
       change: "+2%",
       icon: TrendingUp,
       color: "text-orange-600"
     }
-  ];
-
-  const recentApplications = [
-    {
-      id: 1,
-      studentName: "Alice Wanjiku",
-      organization: "Safaricom PLC",
-      position: "Software Engineer Intern",
-      status: "Pending Review",
-      submittedDate: "2024-06-18",
-      type: "WBL"
-    },
-    {
-      id: 2,
-      studentName: "John Kamau",
-      organization: "Kenya Commercial Bank",
-      position: "Business Analyst Intern",
-      status: "Approved",
-      submittedDate: "2024-06-17",
-      type: "SBL"
-    },
-    {
-      id: 3,
-      studentName: "Mary Akinyi",
-      organization: "Equity Bank",
-      position: "IT Support Intern",
-      status: "Under Review",
-      submittedDate: "2024-06-16",
-      type: "WBL"
-    }
-  ];
-
-  const systemAlerts = [
-    {
-      id: 1,
-      type: "warning",
-      message: "15 students have pending report submissions",
-      timestamp: "2024-06-18 09:30"
-    },
-    {
-      id: 2,
-      type: "info",
-      message: "New organization partnership request from Microsoft Kenya",
-      timestamp: "2024-06-18 08:15"
-    },
-    {
-      id: 3,
-      type: "success",
-      message: "Monthly evaluation reports generated successfully",
-      timestamp: "2024-06-17 16:45"
-    }
-  ];
+  ] : [];
 
   const getAlertIcon = (type: string) => {
     switch (type) {
@@ -127,12 +99,36 @@ const AdminDashboard = () => {
     console.log('Reviewing application:', id);
   };
 
-  const handleApprove = (id: number) => {
-    console.log('Approving application:', id);
+  const handleApprove = async (id: number) => {
+    try {
+      await approveApplicationMutation.mutateAsync(id);
+      toast({
+        title: "Success",
+        description: "Application approved successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to approve application",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleReject = (id: number) => {
-    console.log('Rejecting application:', id);
+  const handleReject = async (id: number) => {
+    try {
+      await rejectApplicationMutation.mutateAsync({ id, reason: "Application rejected by admin" });
+      toast({
+        title: "Success",
+        description: "Application rejected successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to reject application",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleViewAll = () => {
@@ -147,8 +143,20 @@ const AdminDashboard = () => {
     console.log('Student added:', data);
   };
 
-  const handleExportReport = () => {
-    console.log('Exporting report...');
+  const handleExportReport = async () => {
+    try {
+      await exportReportMutation.mutateAsync();
+      toast({
+        title: "Success",
+        description: "Report exported successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to export report",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -165,24 +173,39 @@ const AdminDashboard = () => {
         />
 
         <div className="flex space-x-2 mb-4">
-          <Button variant="outline" onClick={handleExportReport}>
+          <Button 
+            variant="outline" 
+            onClick={handleExportReport}
+            disabled={exportReportMutation.isPending}
+          >
             <BarChart3 className="mr-2 h-4 w-4" />
-            Generate Report
+            {exportReportMutation.isPending ? "Generating..." : "Generate Report"}
           </Button>
         </div>
 
         {/* Stats Grid */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat) => (
-            <StatsCard
-              key={stat.title}
-              title={stat.title}
-              value={stat.value}
-              change={stat.change}
-              icon={stat.icon}
-              iconColor={stat.color}
-            />
-          ))}
+          {statsLoading ? (
+            // Loading skeleton
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="p-6 border rounded-lg animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+              </div>
+            ))
+          ) : (
+            stats.map((stat) => (
+              <StatsCard
+                key={stat.title}
+                title={stat.title}
+                value={stat.value}
+                change={stat.change}
+                icon={stat.icon}
+                iconColor={stat.color}
+              />
+            ))
+          )}
         </div>
 
         <Tabs defaultValue="applications" className="space-y-4">
@@ -210,27 +233,51 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentApplications.map((application) => (
-                    <div key={application.id} className="p-4 border rounded-lg">
-                      <ApplicationCard
-                        application={application}
-                        showReviewButton={true}
-                        onReview={handleReview}
-                      />
-                      {application.status === 'Pending Review' && (
-                        <div className="flex space-x-2 mt-4">
-                          <Button size="sm" onClick={() => handleApprove(application.id)}>
-                            <CheckCircle className="mr-1 h-4 w-4" />
-                            Approve
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => handleReject(application.id)}>
-                            <XCircle className="mr-1 h-4 w-4" />
-                            Reject
-                          </Button>
-                        </div>
-                      )}
+                  {applicationsLoading ? (
+                    // Loading skeleton
+                    Array.from({ length: 3 }).map((_, index) => (
+                      <div key={index} className="p-4 border rounded-lg animate-pulse">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                      </div>
+                    ))
+                  ) : recentApplications && recentApplications.length > 0 ? (
+                    recentApplications.map((application) => (
+                      <div key={application.id} className="p-4 border rounded-lg">
+                        <ApplicationCard
+                          application={application}
+                          showReviewButton={true}
+                          onReview={handleReview}
+                        />
+                        {application.status === 'Pending Review' && (
+                          <div className="flex space-x-2 mt-4">
+                            <Button 
+                              size="sm" 
+                              onClick={() => handleApprove(application.id)}
+                              disabled={approveApplicationMutation.isPending}
+                            >
+                              <CheckCircle className="mr-1 h-4 w-4" />
+                              {approveApplicationMutation.isPending ? "Approving..." : "Approve"}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="destructive" 
+                              onClick={() => handleReject(application.id)}
+                              disabled={rejectApplicationMutation.isPending}
+                            >
+                              <XCircle className="mr-1 h-4 w-4" />
+                              {rejectApplicationMutation.isPending ? "Rejecting..." : "Reject"}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      No applications found
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -388,7 +435,7 @@ const AdminDashboard = () => {
               </Card>
             </div>
           </TabsContent>
-
+{/* 
           <TabsContent value="alerts" className="space-y-4">
             <Card>
               <CardHeader>
@@ -413,8 +460,8 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
-
+         */}
+</Tabs>
         {/* Forms */}
         {showAddOrganizationForm && (
           <AddOrganizationForm

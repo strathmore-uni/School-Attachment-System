@@ -8,10 +8,13 @@ import DashboardHeader from '@/components/DashboardHeader';
 import ApplicationCard from '@/components/ApplicationCard';
 import NewApplicationForm from '@/components/forms/NewApplicationForm';
 import SearchOrganizationsForm from '@/components/forms/SearchOrganizationsForm';
+import { useCreateApplication } from '@/lib/hooks/useApplications';
+import { toast } from '@/hooks/use-toast';
 
 const Applications = () => {
   const [showNewApplicationForm, setShowNewApplicationForm] = useState(false);
   const [showSearchOrganizationsForm, setShowSearchOrganizationsForm] = useState(false);
+  const{mutateAsync: createApplication} = useCreateApplication();
 
   const applications = [
     {
@@ -40,8 +43,34 @@ const Applications = () => {
     }
   ];
 
-  const handleNewApplication = (data: any) => {
-    console.log('New application:', data);
+  const handleNewApplication = async (data: any) => {
+    try{
+    const applicationData = {
+      organization_id: data.organization_id,
+      position: data.position,
+      attachment_type: data.attachment_type,
+      start_date: data.start_date,
+      end_date: data.end_date,
+      motivation: data.motivation,
+      skills: data.skills,
+      experience: data.experience,
+      availability: data.availability
+    };
+
+    await createApplication(applicationData);
+    setShowNewApplicationForm(false);
+
+    toast({
+      title: "Success",
+      description: "Application submitted successfully",
+    });
+  } catch (error: any) {
+    toast({
+        title: "Error",
+        description: error.message || "Failed to submit application",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

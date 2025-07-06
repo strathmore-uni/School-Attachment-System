@@ -4,15 +4,15 @@ import { createReport } from "./reports";
 export const useSubmitReport = () => {
   return useMutation({
     mutationFn: (report: {
-      title: string;
+      report_title: string;
       content: string;
       week_number: number;
-      activities: string[];
-      achievements: string[];
-      challenges: string[];
-      key_learnings: string[];
-      next_week_plans: string[];
-      student_id: string;
+      activities: string;
+      achievements: string;
+      challenges: string;
+      key_learnings: string;
+      next_week_plans: string;
+      attatchment_url: string;
     }) => createReport(report),
   });
 };

@@ -6,11 +6,12 @@ import { FileText, Calendar, Clock, Plus } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
 import SubmitReportForm from '@/components/forms/SubmitReportForm';
-import { useSubmitReport } from '@/lib/reports/mutations';
+import { useCreateReport } from '@/lib/hooks/useReports';
+import { toast } from '@/hooks/use-toast';
 
 const Reports = () => {
   const [showSubmitReportForm, setShowSubmitReportForm] = useState(false);
-  const { mutateAsync: submitReport } = useSubmitReport();
+  const { mutateAsync: submitReport } = useCreateReport();
 
   const reports = [
     {
@@ -45,21 +46,36 @@ const Reports = () => {
     }
   };
 
-  async function handleSubmitReport (data: any)  {
-    const report = await submitReport({
-      report_title: data.report_title,
-      content: data.content,
-      week_number: data.week_number,
-      activities: data.activities,
-      achievements: data.achievements,
-      challenges: data.challenges,
-      key_learnings: data.key_learnings,
-      next_week_plans: data.next_week_plans,
-      student_id: data.student_id,
-    });
-    setShowSubmitReportForm(false);
-    console.log('Report submitted:', report);
-  };
+  async function handleSubmitReport(data: any) {
+    try {
+      const reportData = {
+        report_title: data.report_title,
+        content: data.content,
+        activities: data.activities,
+        achievements: data.achievements,
+        challenges: data.challenges,
+        key_learnings: data.key_learnings,
+        next_weeks_plans: data.next_week_plans,
+        attachment_url: data.attachment_url,
+        week_number: parseInt(data.week_number)
+      };
+
+      console.log("Submitting report data:", reportData);
+
+      await submitReport(reportData);
+      setShowSubmitReportForm(false);
+      toast({
+        title: "Success",
+        description: "Report submitted successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to submit report",
+        variant: "destructive",
+      });
+    }
+  }
 
   return (
     <Layout>
