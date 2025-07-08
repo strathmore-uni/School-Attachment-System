@@ -14,6 +14,7 @@ import {
   type Organization,
   type AnalyticsData
 } from "@/lib/api/dashboard";
+import { ApplicationData } from "../api/applications";
 
 //Dashboard Stats
 export const useDashboardStats = () => {
@@ -26,7 +27,7 @@ export const useDashboardStats = () => {
 
 // Recent Applications
 export const useRecentApplications = () => {
-  return useQuery<Application[]>({
+  return useQuery<ApplicationData[]>({
     queryKey: ["recent-applications"],
     queryFn: getRecentApplications,
     staleTime: 2 * 60 * 1000, // 2 minutes

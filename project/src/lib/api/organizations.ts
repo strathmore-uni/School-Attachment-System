@@ -36,7 +36,7 @@ export const createOrganization = async (data: OrganizationData): Promise<Organi
 
 export const getOrganizations = async (): Promise<OrganizationData[]> => {
   try {
-    const response = await custAxios.get<OrganizationData[]>("/organizations");
+    const response = await custAxios.get<OrganizationData[]>("/organizations/get-organizations");
     return response.data;
   } catch (error) {
     console.error("Error fetching organizations:", error);
@@ -46,7 +46,7 @@ export const getOrganizations = async (): Promise<OrganizationData[]> => {
 
 export const getOrganizationById = async (id: number): Promise<OrganizationData> => {
   try {
-    const response = await custAxios.get<OrganizationData>(`/organizations/ get-organisation/${id}`);
+    const response = await custAxios.get<OrganizationData>(`/organizations/get-organizationById/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching organization:", error);
@@ -76,7 +76,7 @@ export const deleteOrganization = async (id: number): Promise<OrganizationRespon
 
 export const searchOrganizations = async (query: string): Promise<OrganizationData[]> => {
   try {
-    const response = await custAxios.get<{ data: OrganizationData[] }>(`/organizations/search?q=${encodeURIComponent(query)}`);
+    const response = await custAxios.get<{ data: OrganizationData[] }>(`/organizations/search-organizations${encodeURIComponent(query)}`);
     return response.data.data;
   } catch (error) {
     console.error("Error searching organizations:", error);
@@ -86,7 +86,7 @@ export const searchOrganizations = async (query: string): Promise<OrganizationDa
 
 export const getOrganizationStudents = async (id: number): Promise<any[]> => {
   try {
-    const response = await custAxios.get<{ data: any[] }>(`/organizations/organisation-students${id}`);
+    const response = await custAxios.get<{ data: any[] }>(`/organizations/get-organization${id}`);
     return response.data.data;
   } catch (error) {
     console.error("Error fetching organization students:", error);
@@ -96,7 +96,7 @@ export const getOrganizationStudents = async (id: number): Promise<any[]> => {
 
 export const assignStudentToOrganization = async (organizationId: number, studentId: number): Promise<OrganizationResponse> => {
   try {
-    const response = await custAxios.post<{ success: boolean; message: string }>(`/organizations/assign-student-to-organisation/${organizationId}`, { studentId });
+    const response = await custAxios.post<{ success: boolean; message: string }>(`/organizations/assign-student-to-organization/${organizationId}`, { studentId });
     return response.data;
   } catch (error: any) {
     console.error("Error assigning student to organization:", error);

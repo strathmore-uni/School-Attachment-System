@@ -33,115 +33,107 @@ export const createReport = async (data: ReportData): Promise<ReportData> => {
   }
 };
 
-// export const getReports = async (): Promise<ReportData[]> => {
-//   try {
-//     const response = await custAxios.get("/reports");
-//     return response.data.data;
-//   } catch (error) {
-//     console.error("Error fetching reports:", error);
-//     throw error;
-//   }
-// };
+export const getReports = async (studentId: number): Promise<ReportData[]> => {
+  try {
+    const response = await custAxios.get<{ data: ReportData[] }>("/get-reports", { params: { studentId } });
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching report:", error);
+    throw error;
+  }
+};
+// duplicated method, should be removed
+export const getReportById = async (id: number): Promise<ReportData> => {
+  try {
+    const response = await custAxios.get<{ data: ReportData }>(`/reports/get-report/${id}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching report:", error);
+    throw error;
+  }
+};
 
-// export const getReportById = async (id: number): Promise<ReportData> => {
-//   try {
-//     const response = await custAxios.get(`/reports/${id}`);
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching report:", error);
-//     throw error;
-//   }
-// };
 
-// export const updateReport = async (id: number, data: Partial<ReportData>): Promise<ReportResponse> => {
-//   try {
-//     const response = await custAxios.put(`/reports/${id}`, data);
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Error updating report:", error);
-//     throw new Error(error.response?.data?.message || "Failed to update report");
-//   }
-// };
 
-// export const deleteReport = async (id: number): Promise<ReportResponse> => {
-//   try {
-//     const response = await custAxios.delete(`/reports/${id}`);
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Error deleting report:", error);
-//     throw new Error(error.response?.data?.message || "Failed to delete report");
-//   }
-// };
+export const deleteReport = async (id: number): Promise<ReportResponse> => {
+  try {
+    const response = await custAxios.delete<{ Data: ReportResponse }>(`/reports/delete-report/${id}`);
+    return response.data.Data;
+  } catch (error: any) {
+    console.error("Error deleting report:", error);
+    throw new Error(error.response?.data?.message || "Failed to delete report");
+  }
+};
 
-// export const getStudentReports = async (): Promise<ReportData[]> => {
-//   try {
-//     const response = await custAxios.get("/reports/student");
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching student reports:", error);
-//     throw error;
-//   }
-// };
+export const getStudentReports = async (): Promise<ReportData[]> => {
+  try {
+    const response = await custAxios.get<{ data: ReportData[] }>("/reports/get-student-reports");
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching student reports:", error);
+    throw error;
+  }
+};
 
-// export const getSupervisorReports = async (): Promise<ReportData[]> => {
-//   try {
-//     const response = await custAxios.get("/reports/supervisor");
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching supervisor reports:", error);
-//     throw error;
-//   }
-// };
+export const getSupervisorReports = async (): Promise<ReportData[]> => {
+  try {
+    const response = await custAxios.get<{ data: ReportData[] }>("/reports/get-supervisor-reports");
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching supervisor reports:", error);
+    throw error;
+  }
+};
 
-// export const reviewReport = async (id: number, feedback: string, status: string): Promise<ReportResponse> => {
-//   try {
-//     const response = await custAxios.patch(`/reports/${id}/review`, { feedback, status });
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Error reviewing report:", error);
-//     throw new Error(error.response?.data?.message || "Failed to review report");
-//   }
-// };
+export const reviewReport = async (id: number, feedback: string, status: string): Promise<ReportResponse> => {
+  try {
+    const response = await custAxios.patch<{ data: ReportResponse }>(`/reports/review-reports/${id}`, { feedback, status });
+    return response.data.data;
+  } catch (error: any) {
+    console.error("Error reviewing report:", error);
+    throw new Error(error.response?.data?.message || "Failed to review report");
+  }
+};
 
-// export const approveReport = async (id: number, feedback?: string): Promise<ReportResponse> => {
-//   try {
-//     const response = await custAxios.patch(`/reports/${id}/approve`, { feedback });
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Error approving report:", error);
-//     throw new Error(error.response?.data?.message || "Failed to approve report");
-//   }
-// };
+export const approveReport = async (id: number, feedback?: string): Promise<ReportResponse> => {
+  try {
+    const response = await custAxios.patch<{ data: ReportResponse }>(`/reports/approve-reports/${id}`, { feedback });
+    return response.data.data;
+  } catch (error: any) {
+    console.error("Error approving report:", error);
+    throw new Error(error.response?.data?.message || "Failed to approve report");
+  }
+};
 
-// export const rejectReport = async (id: number, feedback: string): Promise<ReportResponse> => {
-//   try {
-//     const response = await custAxios.patch(`/reports/${id}/reject`, { feedback });
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Error rejecting report:", error);
-//     throw new Error(error.response?.data?.message || "Failed to reject report");
-//   }
-// };
+export const rejectReport = async (id: number, feedback: string): Promise<ReportResponse> => {
+  try {
+    const response = await custAxios.patch<{ data: ReportResponse }>(`/reports/reject-reports/${id}`, { feedback });
+    return response.data.data;
+  } catch (error: any) {
+    console.error("Error rejecting report:", error);
+    throw new Error(error.response?.data?.message || "Failed to reject report");
+  }
+};
 
-// export const getPendingReports = async (): Promise<ReportData[]> => {
-//   try {
-//     const response = await custAxios.get("/reports/pending");
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching pending reports:", error);
-//     throw error;
-//   }
-// };
+export const getPendingReports = async (): Promise<ReportData[]> => {
+  try {
+    const response = await custAxios.get<{ data: ReportData[] }>("/reports/get-pending-reports");
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching pending reports:", error);
+    throw error;
+  }
+};
 
-// export const exportReports = async (filters?: any): Promise<Blob> => {
-//   try {
-//     const response = await custAxios.get("/reports/export", {
-//       params: filters,
-//       responseType: 'blob'
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error exporting reports:", error);
-//     throw error;
-//   }
-// }; 
+export const exportReports = async (filters?: any): Promise<Blob> => {
+  try {
+    const response = await custAxios.get<{ data: Blob }>("/reports/export-reports", {
+      params: filters,
+      responseType: 'blob'
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error("Error exporting reports:", error);
+    throw error;
+  }
+}; 

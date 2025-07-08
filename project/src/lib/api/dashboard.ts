@@ -1,4 +1,5 @@
 import custAxios from "@/hooks/custAxios";
+import { ApplicationData } from "./applications";
 
 export interface DashboardStats {
   totalStudents: number;
@@ -63,10 +64,10 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
   }
 };
 
-export const getRecentApplications = async (): Promise<Application[]> => {
+export const getRecentApplications = async (): Promise<ApplicationData[]> => {
   try {
     const response = await custAxios.get("/dashboard/applications");
-    return response.data as Application[];
+    return response.data as ApplicationData[];
   } catch (error) {
     console.error("Error fetching recent applications:", error);
     throw error;

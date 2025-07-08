@@ -47,8 +47,8 @@ export const createStudent = async (
   data: StudentData
 ): Promise<StudentResponse> => {
   try {
-    const response = await custAxios.post("/students/create-student", data);
-    return response.data;
+    const response = await custAxios.post<{ data: StudentResponse }>("/students/create-student", data);
+    return response.data.data;
   } catch (error: any) {
     console.error("Error creating student:", error);
     throw new Error(
@@ -59,8 +59,8 @@ export const createStudent = async (
 
 export const getStudents = async (): Promise<StudentData[]> => {
   try {
-    const response = await custAxios.get("/students");
-    return response.data;
+    const response = await custAxios.get<{ data: StudentData[] }>("/students");
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching students:", error);
     throw error;
@@ -69,8 +69,8 @@ export const getStudents = async (): Promise<StudentData[]> => {
 
 export const getStudentById = async (id: number): Promise<StudentData> => {
   try {
-    const response = await custAxios.get(`/students/${id}`);
-    return response.data;
+    const response = await custAxios.get<{ data: StudentData }>(`/students/${id}`);
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching student:", error);
     throw error;
@@ -82,8 +82,8 @@ export const updateStudent = async (
   data: Partial<StudentData>
 ): Promise<StudentResponse> => {
   try {
-    const response = await custAxios.put(`/students/${id}`, data);
-    return response.data;
+    const response = await custAxios.put<{ data: StudentResponse }>(`/students/${id}`, data);
+    return response.data.data;
   } catch (error: any) {
     console.error("Error updating student:", error);
     throw new Error(
@@ -94,8 +94,8 @@ export const updateStudent = async (
 
 export const deleteStudent = async (id: number): Promise<StudentResponse> => {
   try {
-    const response = await custAxios.delete(`/students/${id}`);
-    return response.data;
+    const response = await custAxios.delete<{ data: StudentResponse }>(`/students/${id}`);
+    return response.data.data;
   } catch (error: any) {
     console.error("Error deleting student:", error);
     throw new Error(
@@ -106,8 +106,8 @@ export const deleteStudent = async (id: number): Promise<StudentResponse> => {
 
 export const getStudentDashboard = async (): Promise<StudentDashboardData> => {
   try {
-    const response = await custAxios.get("/students/dashboard");
-    return response.data;
+    const response = await custAxios.get<{ data: StudentDashboardData }>("/students/student-dashboard");
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching student dashboard:", error);
     throw error;
@@ -116,8 +116,8 @@ export const getStudentDashboard = async (): Promise<StudentDashboardData> => {
 
 export const getStudentProfile = async (): Promise<StudentData> => {
   try {
-    const response = await custAxios.get("/students/profile");
-    return response.data;
+    const response = await custAxios.get<{ data: StudentData }>("/students/student-profile");
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching student profile:", error);
     throw error;
@@ -128,8 +128,8 @@ export const updateStudentProfile = async (
   data: Partial<StudentData>
 ): Promise<StudentResponse> => {
   try {
-    const response = await custAxios.put("/students/profile", data);
-    return response.data;
+    const response = await custAxios.put<{ data: StudentResponse }>("/students/update-student-profile", data);
+    return response.data.data;
   } catch (error: any) {
     console.error("Error updating student profile:", error);
     throw new Error(
@@ -143,11 +143,8 @@ export const assignSupervisor = async (
   supervisorId: number
 ): Promise<StudentResponse> => {
   try {
-    const response = await custAxios.patch(
-      `/students/${studentId}/assign-supervisor`,
-      { supervisorId }
-    );
-    return response.data;
+    const response = await custAxios.patch<{ data: StudentResponse }>(`/students//assign-supervisor/${studentId}`, { supervisorId } );
+    return response.data.data;
   } catch (error: any) {
     console.error("Error assigning supervisor:", error);
     throw new Error(
@@ -158,8 +155,8 @@ export const assignSupervisor = async (
 
 export const getSupervisorStudents = async (): Promise<StudentData[]> => {
   try {
-    const response = await custAxios.get("/students/supervisor");
-    return response.data;
+    const response = await custAxios.get<{ data: StudentData[] }>("/students/supervisor-students");
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching supervisor students:", error);
     throw error;
@@ -168,10 +165,8 @@ export const getSupervisorStudents = async (): Promise<StudentData[]> => {
 
 export const searchStudents = async (query: string): Promise<StudentData[]> => {
   try {
-    const response = await custAxios.get(
-      `/students/search?q=${encodeURIComponent(query)}`
-    );
-    return response.data;
+    const response = await custAxios.get<{ data: StudentData[] }>(`/students/search?q=${encodeURIComponent(query)}`);
+    return response.data.data;
   } catch (error) {
     console.error("Error searching students:", error);
     throw error;
@@ -182,8 +177,8 @@ export const getStudentAttachments = async (
   studentId: number
 ): Promise<any[]> => {
   try {
-    const response = await custAxios.get(`/students/${studentId}/attachments`);
-    return response.data;
+    const response = await custAxios.get<{ data: any[] }>(`/students/student-attachment/${studentId}`);
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching student attachments:", error);
     throw error;
@@ -192,11 +187,11 @@ export const getStudentAttachments = async (
 
 export const exportStudents = async (filters?: any): Promise<Blob> => {
   try {
-    const response = await custAxios.get("/students/export", {
+    const response = await custAxios.get<{ data: Blob }>("/students/export-students", {
       params: filters,
       responseType: "blob",
     });
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error exporting students:", error);
     throw error;

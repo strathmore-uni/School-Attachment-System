@@ -1,11 +1,12 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ApplicationData } from '@/lib/api/applications';
 
 interface Application {
   id: number;
-  studentName?: string;
-  organization: string;
+  studentName: string;
+  organization_id: string;
   position: string;
   status: string;
   appliedDate?: string;
@@ -14,7 +15,7 @@ interface Application {
 }
 
 interface ApplicationCardProps {
-  application: Application;
+  application: ApplicationData;
   showReviewButton?: boolean;
   onReview?: (id: number) => void;
 }
@@ -33,21 +34,21 @@ const ApplicationCard = ({ application, showReviewButton = false, onReview }: Ap
     <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
       <div className="flex-1 space-y-1">
         <div className="flex items-center space-x-2">
-          {application.studentName && (
-            <h4 className="font-semibold">{application.studentName}</h4>
+          {application.studentId && (
+            <h4 className="font-semibold">{application.studentId}</h4>
           )}
-          {application.type && (
-            <Badge variant={application.type === 'WBL' ? 'default' : 'secondary'}>
-              {application.type}
+          {application.attachment_type && (
+            <Badge variant={application.attachment_type === 'WBL' ? 'default' : 'secondary'}>
+              {application.attachment_type}
             </Badge>
           )}
         </div>
         <p className="text-sm text-muted-foreground">
-          {application.position} at {application.organization}
+          {application.position} at {application.organization_id}
         </p>
         <p className="text-xs text-muted-foreground">
-          {application.appliedDate ? 
-            `Applied: ${application.appliedDate}` : 
+          {application.end_date ? 
+            `Applied: ${application.start_date}` : 
             `Submitted: ${application.submittedDate}`
           }
         </p>
