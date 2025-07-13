@@ -2,20 +2,31 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ApplicationData } from '@/lib/api/applications';
+import { ApplicationDashboardData } from '@/lib/api/students';
 
-interface Application {
+interface applicationData {
   id: number;
-  studentName: string;
+  student_name: string;
   organization_id: string;
   position: string;
   status: string;
   appliedDate?: string;
   submittedDate?: string;
   type?: string;
+  attachment_type?: string;
+  start_date?: string;
+  end_date?: string;
+  motivation?: string;
+  skills?: string;
+  experience?: string;
+  availability?: string;
+  studentId?: number;
+  created_at?: string;
+
 }
 
 interface ApplicationCardProps {
-  application: ApplicationData;
+  application: ApplicationDashboardData | applicationData;
   showReviewButton?: boolean;
   onReview?: (id: number) => void;
 }
@@ -23,9 +34,9 @@ interface ApplicationCardProps {
 const ApplicationCard = ({ application, showReviewButton = false, onReview }: ApplicationCardProps) => {
   const getStatusVariant = (status: string) => {
     switch (status) {
-      case 'Approved': return 'default';
-      case 'Pending Review': return 'secondary';
-      case 'Under Review': return 'outline';
+      case 'approved': return 'default';
+      case 'pending': return 'secondary';
+      case 'review': return 'outline';
       default: return 'secondary';
     }
   };
@@ -34,8 +45,8 @@ const ApplicationCard = ({ application, showReviewButton = false, onReview }: Ap
     <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
       <div className="flex-1 space-y-1">
         <div className="flex items-center space-x-2">
-          {application.studentId && (
-            <h4 className="font-semibold">{application.studentId}</h4>
+          {application.id && (
+            <h4 className="font-semibold">{application.id}</h4>
           )}
           {application.attachment_type && (
             <Badge variant={application.attachment_type === 'WBL' ? 'default' : 'secondary'}>
@@ -48,8 +59,8 @@ const ApplicationCard = ({ application, showReviewButton = false, onReview }: Ap
         </p>
         <p className="text-xs text-muted-foreground">
           {application.end_date ? 
-            `Applied: ${application.start_date}` : 
-            `Submitted: ${application.submittedDate}`
+            `Applied: ${new Date(application.start_date).toLocaleDateString()}` : 
+            `Submitted: ${new Date(application.created_at).toLocaleDateString()}`
           }
         </p>
       </div>
@@ -68,3 +79,4 @@ const ApplicationCard = ({ application, showReviewButton = false, onReview }: Ap
 };
 
 export default ApplicationCard;
+export type { applicationData };

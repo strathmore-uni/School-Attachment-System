@@ -94,16 +94,6 @@ export const getStudents = async (): Promise<Student[]> => {
   }
 };
 
-export const getOrganizations = async (): Promise<Organization[]> => {
-  try {
-    const response = await custAxios.get<{ data: Organization[] }>("/organizations/get-organizations");
-    console.log("Organizations fetched successfully:", response.data.data);
-    return response.data.data as Organization[];
-  } catch (error) {
-    console.error("Error fetching organizations:", error);
-    throw error;
-  }
-};
 
 export const getAnalytics = async (): Promise<AnalyticsData> => {
   try {

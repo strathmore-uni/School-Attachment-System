@@ -10,6 +10,14 @@ import custAxios from "@/hooks/custAxios";
   };
 };
 
+export interface AxiosResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+
+
 type Response = {
   success: boolean;
   message: string;

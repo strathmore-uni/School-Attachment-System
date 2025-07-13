@@ -2,13 +2,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
+import { useAuth } from "@/lib/context";
 
 function NotFound() {
   const location = useLocation();
   const navigate = useNavigate();
 
   function handleGoHome() {
-    const userRole = localStorage.getItem('userRole');
+    const {user} = useAuth();
+    const userRole = user?.role || localStorage.getItem("userRole");
     
     if (!userRole) {
       navigate('/login');

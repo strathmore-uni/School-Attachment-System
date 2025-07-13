@@ -34,87 +34,103 @@ import AdminStudents from "./pages/admin/Students";
 import AdminOrganizations from "./pages/admin/Organizations";
 import AdminAnalytics from "./pages/admin/Analytics";
 import AdminSettings from "./pages/admin/Settings";
+import { AuthProvider, useAuth } from "./lib/context";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const userRole = localStorage.getItem("userRole");
-  if (!userRole) {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, user } = useAuth();
+
+  if (!isAuthenticated || !user) {
+    console.warn("User not authenticated or user missing, redirecting...");
     return <Navigate to="/login" replace />;
   }
+
   return <>{children}</>;
-}
+};
+
 
 function HomePage() {
-  const userRole = localStorage.getItem("userRole");
+  const { user } = useAuth();
+  console.log("HomePage user:", user);
+  const userRole = user?.role;
 
   if (!userRole) {
+    console.warn("No user role found, redirecting to login...");
     return <Navigate to="/login" replace />;
   }
 
-  if (userRole === "student")
-    return <Navigate to="/student-dashboard" replace />;
-  if (userRole === "administrator")
-    return <Navigate to="/admin-dashboard" replace />;
-  if (userRole === "school-supervisor")
-    return <Navigate to="/school-supervisor-dashboard" replace />;
-  if (userRole === "host-supervisor")
-    return <Navigate to="/host-supervisor-dashboard" replace />;
-
-  return <Navigate to="/login" replace />;
+  switch (userRole) {
+    case "student":
+      return <Navigate to="/student-dashboard" replace />;
+    case "administrator":
+      return <Navigate to="/admin-dashboard" replace />;
+    case "school-supervisor":
+      return <Navigate to="/school-supervisor-dashboard" replace />;
+    case "host-supervisor":
+      return <Navigate to="/host-supervisor-dashboard" replace />;
+    default:
+      return <Navigate to="/login" replace />;
+  }
 }
+
 
 // function App() {
   // user state
   const App: React.FC = () => {
-  const [user, setUser] = useState<any>(null);
+  const { user } = useAuth();
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      const stored = localStorage.getItem("user");
-      if (!stored) {
+      const storedUser = user ?? JSON.parse(localStorage.getItem("user") || "null");
+
+      if (!storedUser) {
+        console.warn("No user found in context or localStorage.");
         setLoading(false);
         return;
       }
-      const u = JSON.parse(stored);
-      setUser(u);
+
       try {
         let data: any;
-        switch (u.role) {
-          case "admin":
+
+        switch (storedUser.role) {
+          case "administrator":
             data = await getAdminDashboard();
             break;
           case "student":
             data = await getStudentDashboard();
             break;
-          case "school_supervisor":
+          case "school-supervisor":
             data = await getSchoolSupervisorDashboard();
             break;
-          case "host_supervisor":
+          case "host-supervisor":
             data = await getHostSupervisorDashboard();
             break;
           default:
             data = await getUserProfile();
         }
+
         setDashboardData(data);
       } catch (err) {
-        console.error(err);
+        console.error("Error loading dashboard:", err);
       } finally {
         setLoading(false);
       }
     };
+
     load();
-  }, []);
+  }, [user]);
 
   if (loading) return <div>Loading...</div>;
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <BrowserRouter>
-          <Routes>
+   
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <BrowserRouter>
+            <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -286,6 +302,7 @@ function HomePage() {
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
+      
   );
 }
 

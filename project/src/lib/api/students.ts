@@ -1,4 +1,6 @@
 import custAxios from "@/hooks/custAxios";
+import { ApplicationData } from "./applications";
+import { ReportData } from "./reports";
 
 export interface StudentData {
   id?: number;
@@ -8,6 +10,11 @@ export interface StudentData {
   phone?: string;
   department?: string;
   yearOfStudy?: number;
+  progress?: number;
+  organization?: string;
+  position?: string;
+  overallRating?: number;
+  lastReportDate?: number;
   status?: string;
   schoolSupervisorId?: number;
   currentAttachmentId?: number;
@@ -19,19 +26,54 @@ export interface StudentResponse {
   student?: StudentData;
 }
 
-export interface StudentDashboardData {
-  activeApplications: number;
-  currentAttachment?: {
-    organization: string;
-    position: string;
-    start_date: string;
-    end_date: string;
-    progress: number;
-    schoolSupervisor: string;
-    hostSupervisor: string;
-    reportsSubmitted: number;
-    totalReports: number;
+export interface ReportDashboardData  {
+    achievements: string;
+    activities: string;
+    created_at: string;
+    feedback: string;
+    id: number;
+    report_title: string;
+    status: string;
+    student_id: number;
+    week_number: number;
+    attachment_url?: string;
+    challenges: string;
+    key_learnings: string;
+    next_weeks_plan: string;
   };
+
+export interface ApplicationDashboardData {
+    student_name?: string;
+    attachment_type: string;
+    availability: string;
+    created_at: string;
+    end_date: string;
+    id: number;
+    host_supervisor: string;
+    school_supervisor: string;
+    organization_id: number;
+    experience: string;
+    motivation: string;
+    location: string;
+    organization_name: string;
+    position: string;
+    skills: string;
+    start_date: string;
+    status: string;
+    student_id: number;
+    updated_at: string;
+  };
+
+export interface StudentDashboardData {
+  applications: Array<ApplicationDashboardData>;
+  profile: StudentData;
+  reports: Array<ReportDashboardData>;
+  statistics: {
+    totalApplications: number;
+    pendingApplications: number;
+    approvedApplications: number;
+    totalReports: number;
+  }
   recentReports: Array<{
     id: number;
     title: string;
@@ -106,7 +148,8 @@ export const deleteStudent = async (id: number): Promise<StudentResponse> => {
 
 export const getStudentDashboard = async (): Promise<StudentDashboardData> => {
   try {
-    const response = await custAxios.get<{ data: StudentDashboardData }>("/students/student-dashboard");
+    const response = await custAxios.get<{ data: StudentDashboardData }>("/dashboard/student");
+    console.log("Student Dashboard Data:", response.data.data);
     return response.data.data;
   } catch (error) {
     console.error("Error fetching student dashboard:", error);

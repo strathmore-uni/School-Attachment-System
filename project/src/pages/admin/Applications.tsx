@@ -6,46 +6,11 @@ import { FileText, Eye, CheckCircle, XCircle } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
 import ApplicationCard from '@/components/ApplicationCard';
+import { useStudentDashboard } from '@/lib/hooks/useStudents';
 
 const Applications = () => {
-  const applications = [
-    {
-      id: 1,
-      studentName: "Alice Wanjiku",
-      organization: "Safaricom PLC",
-      position: "Software Engineer Intern",
-      status: "Pending Review",
-      submittedDate: "2024-06-18",
-      type: "WBL"
-    },
-    {
-      id: 2,
-      studentName: "John Kamau",
-      organization: "Kenya Commercial Bank",
-      position: "Business Analyst Intern",
-      status: "Approved",
-      submittedDate: "2024-06-17",
-      type: "SBL"
-    },
-    {
-      id: 3,
-      studentName: "Mary Akinyi",
-      organization: "Equity Bank",
-      position: "IT Support Intern",
-      status: "Under Review",
-      submittedDate: "2024-06-16",
-      type: "WBL"
-    },
-    {
-      id: 4,
-      studentName: "Peter Ochieng",
-      organization: "Co-operative Bank",
-      position: "Customer Service Intern",
-      status: "Pending Review",
-      submittedDate: "2024-06-15",
-      type: "SBL"
-    }
-  ];
+  const { data: dashboardData, isLoading: dashboardLoading } = useStudentDashboard();
+  const applications = dashboardData?.applications || [];
 
   const handleReview = (id: number) => {
     console.log('Reviewing application:', id);

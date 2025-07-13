@@ -87,20 +87,24 @@ export async function loginUser(user: {
 }): Promise<any> {
   try {
     const res = await custAxios.post("/auth/login", user);
-    const data = handleResponse(res);
-    
+    const data = await handleResponse(res);
+
     // Store token and user data
-    if (data.data?.token) {
-      localStorage.setItem("token", data.data.token);
-      localStorage.setItem("user", JSON.stringify(data.data.user));
+   
+      const { user: userData, token } = data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userData));
+    } catch (error) {
+      console.error("Error storing user data:", error);
     }
-    
-    return data;
-  } catch (error: any) {
-    if (error.response?.status === 401) return Promise.reject("Invalid credentials");
-    throw error;
   }
-}
+
+  //   return data;
+  // } catch (error: any) {
+  //   if (error.response?.status === 401) return Promise.reject("Invalid credentials");
+  //   throw error;
+  // }
+
 
 export async function registerUser(user: {
   role: string;

@@ -13,13 +13,16 @@ export interface ApplicationData {
   availability: string;
   status?: string;
   submittedDate?: string;
-  studentId?: number;
+  stdentId?: number;
 }
 
 export interface ApplicationResponse {
-  success: boolean;
-  message: string;
+  // success: boolean;
+  // message: string;
   application?: ApplicationData;
+  showReviewButton?: boolean;
+  review?: boolean;
+  onReview?: () => void;
 }
 
 // Applications API calls
@@ -33,9 +36,11 @@ export const createApplication = async (data: ApplicationData): Promise<Applicat
   }
 };
 
-export const getApplications = async (): Promise<ApplicationData[]> => {
+export const getApplications = async (organization_id: string = ""): Promise<ApplicationData[]> => {
   try {
-    const response = await custAxios.get<{ data: ApplicationData[] }>("/applications/get-applications");
+    const response = await custAxios.get<{ data: ApplicationData[] }>("/applications/get-applications", {
+      params: { organization_id }
+    });
     return response.data.data as ApplicationData[];
   } catch (error) {
     console.error("Error fetching applications:", error);

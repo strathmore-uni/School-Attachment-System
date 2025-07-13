@@ -109,7 +109,7 @@ const Register = () => {
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
                 <Select value={userRole} onValueChange={setUserRole}>
-                  <SelectTrigger aria-label="Select your role" id="role" name="role" autocomplete="role">
+                  <SelectTrigger aria-label="Select your role" id="role" name="role">
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
                   <SelectContent>

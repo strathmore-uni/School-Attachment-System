@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,24 +24,39 @@ import { toast } from '@/hooks/use-toast';
 import { useStudentDashboard } from '@/lib/hooks/useStudents';
 import { useCreateApplication, useStudentApplications } from '@/lib/hooks/useApplications';
 import { useCreateReport } from '@/lib/hooks/useReports';
+import dayjs from "dayjs";
 
 const StudentDashboard = () => {
+  const [progress, setProgress] = useState(0);
   const [showSubmitReportForm, setShowSubmitReportForm] = useState(false);
   const [showNewApplicationForm, setShowNewApplicationForm] = useState(false);
   const [showSearchOrganizationsForm, setShowSearchOrganizationsForm] = useState(false);
+
   const { mutateAsync: submitReport } = useCreateReport();
   const { mutateAsync: createApplication } = useCreateApplication();
-  // API hooks
+
   const { data: dashboardData, isLoading: dashboardLoading } = useStudentDashboard();
-  const { data: activeApplications, isLoading: applicationsLoading } = useStudentApplications();
+  const activeApplications = dashboardData?.applications || [];
+  useEffect(() => {
+    if (dashboardLoading || !dashboardData?.applications?.[0]) return;
 
-  // Calculate days completed if we have current attachment data
-  const daysCompleted = dashboardData?.currentAttachment 
-    ? Math.round((new Date().getTime() - new Date(dashboardData.currentAttachment.start_date).getTime()) / (1000 * 60 * 60 * 24))
-    : 0;
+    const app = dashboardData.applications[0];
+    const start = dayjs(app.start_date);
+    const end = dayjs(app.end_date);
+    const today = dayjs();
 
+    const totalDays = end.diff(start, "day");
+    const daysPassed = today.diff(start, "day");
 
-  async function handleSubmitReport(data: any) {
+    const percentage = Math.min(
+      100,
+      Math.max(0, Math.round((daysPassed / totalDays) * 100))
+    );
+
+    setProgress(percentage);
+  }, [dashboardLoading, dashboardData]);
+
+  const handleSubmitReport = async (data: any) => {
     try {
       const reportData = {
         report_title: data.report_title,
@@ -51,12 +66,12 @@ const StudentDashboard = () => {
         key_learnings: data.key_learnings,
         next_weeks_plans: data.next_week_plans,
         attachment_url: data.attachment_url,
-        week_number: parseInt(data.week_number)
+        week_number: parseInt(data.week_number),
       };
-      
-      console.log("Submitting report data:", reportData);
 
+      console.log("Submitting report data:", reportData);
       await submitReport(reportData);
+
       toast({
         title: "Success",
         description: "Report submitted successfully",
@@ -69,7 +84,10 @@ const StudentDashboard = () => {
         variant: "destructive",
       });
     }
-  }
+  };
+
+
+  const app = dashboardData?.applications?.[0];
 
   const handleNewApplication = async (data: any) => {
     try{
@@ -101,6 +119,11 @@ const StudentDashboard = () => {
     }
   };
 
+    if (dashboardLoading) {
+    return <div className="p-4">Loading dashboard...</div>;
+  }
+
+  const daysCompleted = app ? dayjs().diff(dayjs(app.start_date), "day") : 0;
   return (
     <Layout>
       <div className="flex-1 space-y-6 p-6">
@@ -136,15 +159,14 @@ const StudentDashboard = () => {
               />
               <StatsCard
                 title="Attachment Progress"
-                value={dashboardData?.currentAttachment ? `${dashboardData.currentAttachment.progress}%` : "0%"}
+                value={dashboardData?.applications  ? `${progress}%` : "0%"}
                 change={`${daysCompleted} days completed`}
                 icon={Target}
                 iconColor="text-muted-foreground"
               />
               <StatsCard
                 title="Reports Submitted"
-                value={dashboardData?.currentAttachment ? `${dashboardData.currentAttachment.reportsSubmitted}/${dashboardData.currentAttachment.totalReports}` : "0/0"}
-                change={dashboardData?.currentAttachment ? `${dashboardData.currentAttachment.totalReports - dashboardData.currentAttachment.reportsSubmitted} remaining` : "No attachment"}
+                value={dashboardData?.statistics ? `${dashboardData.statistics.totalReports}` : "0"}
                 icon={FileText}
                 iconColor="text-muted-foreground"
               />
@@ -175,26 +197,42 @@ const StudentDashboard = () => {
                   <CardDescription>Your ongoing attachment details</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {dashboardData?.currentAttachment ? (
+                  {dashboardData?.applications ? (
                     <>
                       <div className="flex items-center space-x-2">
                         <Building2 className="h-4 w-4 text-blue-600" />
-                        <span className="font-semibold">{dashboardData.currentAttachment.organization}</span>
+                        <span className="font-semibold">{dashboardData.applications[0].organization_name}</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <User className="h-4 w-4 text-gray-500" />
-                        <span>{dashboardData.currentAttachment.position}</span>
+                        <span>{dashboardData.applications[0].position}</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4 text-gray-500" />
-                        <span>{dashboardData.currentAttachment.start_date} - {dashboardData.currentAttachment.end_date}</span>
+                        <span>
+                          {new Date(dashboardData.applications[0].start_date).toLocaleDateString(
+
+                            "en-KE" , {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            }
+                          )} -{" "}
+                          {new Date(dashboardData.applications[0].end_date).toLocaleDateString(
+                            "en-KE" , {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            }
+                          )}
+                        </span>
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium">Progress</span>
-                          <span className="text-sm text-muted-foreground">{dashboardData.currentAttachment.progress}%</span>
+                          <span className="text-sm text-muted-foreground">{progress}%</span>
                         </div>
-                        <Progress value={dashboardData.currentAttachment.progress} className="h-2" />
+                        <Progress value={progress} className="h-2" />
                       </div>
                     </>
                   ) : (
@@ -211,7 +249,7 @@ const StudentDashboard = () => {
                   <CardDescription>Your assigned supervisors</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {dashboardData?.currentAttachment ? (
+                  {dashboardData?.applications ? (
                     <>
                       <div className="space-y-2">
                         <span className="text-sm font-medium">School Supervisor</span>
@@ -219,7 +257,7 @@ const StudentDashboard = () => {
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                             <User className="h-4 w-4 text-blue-600" />
                           </div>
-                          <span>{dashboardData.currentAttachment.schoolSupervisor}</span>
+                          <span>{dashboardData.applications[0].school_supervisor}</span>
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -228,7 +266,7 @@ const StudentDashboard = () => {
                           <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                             <User className="h-4 w-4 text-green-600" />
                           </div>
-                          <span>{dashboardData.currentAttachment.hostSupervisor}</span>
+                          <span>{dashboardData.applications[0].host_supervisor}</span>
                         </div>
                       </div>
                     </>
@@ -264,7 +302,7 @@ const StudentDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {applicationsLoading ? (
+                  {dashboardLoading ? (
                     // Loading skeleton
                     Array.from({ length: 2 }).map((_, index) => (
                       <div key={index} className="p-4 border rounded-lg animate-pulse">
@@ -303,12 +341,12 @@ const StudentDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {dashboardData?.recentReports && dashboardData.recentReports.length > 0 ? (
-                    dashboardData.recentReports.map((report) => (
+                  {dashboardData?.reports && dashboardData.reports.length > 0 ? (
+                    dashboardData.reports.map((report) => (
                       <div key={report.id} className="flex items-start justify-between p-4 border rounded-lg">
                         <div className="space-y-2">
-                          <h4 className="font-semibold">{report.title}</h4>
-                          <p className="text-sm text-muted-foreground">Submitted: {report.submittedDate}</p>
+                          <h4 className="font-semibold">{report.report_title}</h4>
+                          <p className="text-sm text-muted-foreground">Submitted: {new Date(report.created_at).toLocaleDateString()}</p>
                           {report.feedback && (
                             <p className="text-sm text-green-600">{report.feedback}</p>
                           )}

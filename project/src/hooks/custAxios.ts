@@ -26,19 +26,6 @@ custAxios.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle auth errors
-custAxios.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response?.status === 401) {
-      // Clear local storage and redirect to login
-      localStorage.clear();
-      window.location.href = "/login";
-    }
-    return Promise.reject(error);
-  }
-);
+
 
 export default custAxios;

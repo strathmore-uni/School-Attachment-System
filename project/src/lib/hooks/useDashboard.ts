@@ -4,7 +4,6 @@ import {
   getRecentApplications,
   getSystemAlerts,
   getStudents,
-  getOrganizations,
   getAnalytics,
   exportReport,
   type DashboardStats,
@@ -15,6 +14,7 @@ import {
   type AnalyticsData
 } from "@/lib/api/dashboard";
 import { ApplicationData } from "../api/applications";
+import { getOrganizations, OrganizationDashboardData } from "../api/organizations";
 
 //Dashboard Stats
 export const useDashboardStats = () => {
@@ -54,7 +54,7 @@ export const useStudents = () => {
 
 // Organizations
 export const useOrganizations = () => {
-  return useQuery<Organization[]>({
+  return useQuery<OrganizationDashboardData[]>({
     queryKey: ["organizations"],
     queryFn: getOrganizations,
     staleTime: 5 * 60 * 1000, // 5 minutes

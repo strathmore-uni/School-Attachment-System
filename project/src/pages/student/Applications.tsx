@@ -10,62 +10,15 @@ import NewApplicationForm from '@/components/forms/NewApplicationForm';
 import SearchOrganizationsForm from '@/components/forms/SearchOrganizationsForm';
 import { useCreateApplication } from '@/lib/hooks/useApplications';
 import { toast } from '@/hooks/use-toast';
+import { useStudentDashboard } from '@/lib/hooks/useStudents';
 
 const Applications = () => {
   const [showNewApplicationForm, setShowNewApplicationForm] = useState(false);
   const [showSearchOrganizationsForm, setShowSearchOrganizationsForm] = useState(false);
   const{mutateAsync: createApplication} = useCreateApplication();
+  const { data: dashboardData, isLoading: dashboardLoading } = useStudentDashboard();
 
-  const applications = [
-    {
-      id: 1,
-      organization: 'Kenya Commercial Bank',
-      organization_id: '101',
-      position: 'IT Intern',
-      status: 'Under Review',
-      appliedDate: '2024-06-15',
-      type: 'SBL',
-      attachment_type: 'SBL',
-      start_date: '2024-07-01',
-      end_date: '2024-09-30',
-      motivation: 'Interested in banking IT systems.',
-      skills: 'Python, Networking',
-      experience: '1 year internship',
-      availability: 'Full-time'
-    },
-    {
-      id: 2,
-      organization: 'Safaricom PLC',
-      organization_id: '102',
-      position: 'Software Development Intern',
-      status: 'Approved',
-      appliedDate: '2024-06-10',
-      type: 'WBL',
-      attachment_type: 'WBL',
-      start_date: '2024-07-15',
-      end_date: '2024-10-15',
-      motivation: 'Passionate about telecom software.',
-      skills: 'JavaScript, React',
-      experience: '2 years coding',
-      availability: 'Full-time'
-    },
-    {
-      id: 3,
-      organization: 'Equity Bank',
-      organization_id: '103',
-      position: 'Customer Service Intern',
-      status: 'Pending Review',
-      appliedDate: '2024-06-08',
-      type: 'SBL',
-      attachment_type: 'SBL',
-      start_date: '2024-08-01',
-      end_date: '2024-10-31',
-      motivation: 'Keen on customer relations.',
-      skills: 'Communication, CRM',
-      experience: '6 months internship',
-      availability: 'Part-time'
-    }
-  ];
+  const applications = dashboardData?.applications || [];
 
   const handleNewApplication = async (data: any) => {
     try{
@@ -132,7 +85,7 @@ const Applications = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-green-600">
-                {applications.filter(app => app.status === 'Approved').length}
+                {applications.filter(app => app.status === 'approved').length}
               </div>
             </CardContent>
           </Card>
@@ -142,7 +95,7 @@ const Applications = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-yellow-600">
-                {applications.filter(app => app.status === 'Under Review').length}
+                {applications.filter(app => app.status === 'review').length}
               </div>
             </CardContent>
           </Card>

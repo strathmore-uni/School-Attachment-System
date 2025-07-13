@@ -33,9 +33,9 @@ export const createReport = async (data: ReportData): Promise<ReportData> => {
   }
 };
 
-export const getReports = async (studentId: number): Promise<ReportData[]> => {
+export const getReports = async (): Promise<ReportData[]> => {
   try {
-    const response = await custAxios.get<{ data: ReportData[] }>("/get-reports", { params: { studentId } });
+    const response = await custAxios.get<{ data: ReportData[] }>("reports/get-all-reports");
     return response.data.data;
   } catch (error) {
     console.error("Error fetching report:", error);

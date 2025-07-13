@@ -6,48 +6,26 @@ import { Building2, MapPin, Users, Star, Search } from 'lucide-react';
 import Layout from '@/components/Layout';
 import DashboardHeader from '@/components/DashboardHeader';
 import SearchOrganizationsForm from '@/components/forms/SearchOrganizationsForm';
+import { useOrganizations } from '@/lib/hooks/useDashboard';
 
 const Organizations = () => {
   const [showSearchOrganizationsForm, setShowSearchOrganizationsForm] = useState(false);
+  const { data: organizationsData, isLoading: organizationsLoading } = useOrganizations();
 
-  const organizations = [
-    {
-      id: 1,
-      name: 'Safaricom PLC',
-      industry: 'Telecommunications',
-      location: 'Nairobi',
-      availablePositions: 5,
-      rating: 4.8,
-      description: 'Leading telecommunications company in Kenya'
-    },
-    {
-      id: 2,
-      name: 'Kenya Commercial Bank',
-      industry: 'Banking',
-      location: 'Nairobi',
-      availablePositions: 3,
-      rating: 4.6,
-      description: 'One of the largest commercial banks in East Africa'
-    },
-    {
-      id: 3,
-      name: 'Equity Bank',
-      industry: 'Banking',
-      location: 'Nairobi',
-      availablePositions: 2,
-      rating: 4.5,
-      description: 'Pan-African financial services group'
-    },
-    {
-      id: 4,
-      name: 'Co-operative Bank',
-      industry: 'Banking',
-      location: 'Nairobi',
-      availablePositions: 4,
-      rating: 4.4,
-      description: 'Customer-owned financial institution'
-    }
-  ];
+  const organizations = Array.isArray(organizationsData)
+    ? organizationsData.map((org) => {
+        const approved = parseInt(String(org.approved_applications || '0'));
+        const capacity = org.capacity || 0;
+        const available_positions = Math.max(capacity - approved, 0);
+
+        return {
+          ...org,
+          approved_applications: approved,
+          available_positions,
+          rating: org.rating ?? 4.0, // default rating if undefined or null
+        };
+      })
+    : [];
 
   return (
     <Layout>
@@ -58,7 +36,7 @@ const Organizations = () => {
           actionButton={{
             label: "Search Organizations",
             icon: Search,
-            onClick: () => setShowSearchOrganizationsForm(true)
+            onClick: () => setShowSearchOrganizationsForm(true),
           }}
         />
 
@@ -71,33 +49,39 @@ const Organizations = () => {
               <div className="text-3xl font-bold">{organizations.length}</div>
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Available Positions</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-green-600">
-                {organizations.reduce((sum, org) => sum + org.availablePositions, 0)}
+                {organizations.reduce((sum, org) => sum + org.available_positions, 0)}
               </div>
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Industries</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-blue-600">
-                {new Set(organizations.map(org => org.industry)).size}
+                {new Set(organizations.map((org) => org.industry || 'Other')).size}
               </div>
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Avg Rating</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-yellow-600">
-                {(organizations.reduce((sum, org) => sum + org.rating, 0) / organizations.length).toFixed(1)}
+                {(
+                  organizations.reduce((sum, org) => sum + (org.rating ?? 4.0), 0) /
+                  organizations.length
+                ).toFixed(1)}
               </div>
             </CardContent>
           </Card>
@@ -106,7 +90,9 @@ const Organizations = () => {
         <Card>
           <CardHeader>
             <CardTitle>Available Organizations</CardTitle>
-            <CardDescription>Partner organizations offering attachment positions</CardDescription>
+            <CardDescription>
+              Partner organizations offering attachment positions
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2">
@@ -119,7 +105,7 @@ const Organizations = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">{org.name}</h3>
-                        <Badge variant="secondary">{org.industry}</Badge>
+                        {org.industry && <Badge variant="secondary">{org.industry}</Badge>}
                       </div>
                     </div>
                     <div className="flex items-center space-x-1">
@@ -127,9 +113,9 @@ const Organizations = () => {
                       <span className="text-sm font-medium">{org.rating}</span>
                     </div>
                   </div>
-                  
+
                   <p className="text-sm text-muted-foreground mb-4">{org.description}</p>
-                  
+
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <div className="flex items-center space-x-1">
@@ -138,11 +124,11 @@ const Organizations = () => {
                       </div>
                       <div className="flex items-center space-x-1">
                         <Users className="h-4 w-4" />
-                        <span>{org.availablePositions} positions available</span>
+                        <span>{org.available_positions} positions available</span>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex space-x-2">
                     <Button size="sm" className="flex-1">
                       Apply Now
@@ -157,11 +143,8 @@ const Organizations = () => {
           </CardContent>
         </Card>
 
-        {/* Forms */}
         {showSearchOrganizationsForm && (
-          <SearchOrganizationsForm
-            onClose={() => setShowSearchOrganizationsForm(false)}
-          />
+          <SearchOrganizationsForm onClose={() => setShowSearchOrganizationsForm(false)} />
         )}
       </div>
     </Layout>

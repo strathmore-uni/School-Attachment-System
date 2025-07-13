@@ -55,6 +55,7 @@ export const useStudentProfile = () => {
   });
 };
 
+
 // Get supervisor students
 export const useSupervisorStudents = () => {
   return useQuery<StudentData[]>({
@@ -182,3 +183,57 @@ export const useExportStudents = () => {
     }
   });
 }; 
+// progress
+export const useProgressStudents = () => {
+  return useQuery<StudentData[]>({
+    queryKey: ["progress-students"],
+    queryFn: getStudents,
+    select: (data) => data.filter(student => student.progress && student.progress > 0),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+//organisation
+export const useOrganizationStudents = (organizationId: number) => {
+  return useQuery<StudentData[]>({
+    queryKey: ["organization-students", organizationId],
+    queryFn: () => getStudentAttachments(organizationId),
+    enabled: !!organizationId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+//position
+export const usePositionStudents = (positionId: number) => {
+  return useQuery<StudentData[]>({
+    queryKey: ["position-students", positionId],
+    queryFn: () => getStudentAttachments(positionId),
+    enabled: !!positionId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+//overallRating
+export const useOverallRatingStudents = () => {
+  return useQuery<StudentData[]>({
+    queryKey: ["overall-rating-students"],
+    queryFn: getStudents,
+    select: (data) => data.filter(student => student.overallRating && student.overallRating > 0),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+// lastReportDate
+export const useLastReportDateStudents = () => {
+  return useQuery<StudentData[]>({
+    queryKey: ["last-report-date-students"],
+    queryFn: getStudents,
+    select: (data) => data.filter(student => student.lastReportDate && student.lastReportDate > 0),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+// organisation
+export const useOrganizationStudentsById = (id: number) => {
+  return useQuery<StudentData[]>({
+    queryKey: ["organization-students", id],
+    queryFn: () => getStudentAttachments(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};

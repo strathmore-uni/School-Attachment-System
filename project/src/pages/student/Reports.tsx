@@ -8,34 +8,14 @@ import DashboardHeader from '@/components/DashboardHeader';
 import SubmitReportForm from '@/components/forms/SubmitReportForm';
 import { useCreateReport } from '@/lib/hooks/useReports';
 import { toast } from '@/hooks/use-toast';
+import { useStudentDashboard } from '@/lib/hooks/useStudents';
 
 const Reports = () => {
   const [showSubmitReportForm, setShowSubmitReportForm] = useState(false);
+    const { data: dashboardData, isLoading: dashboardLoading } = useStudentDashboard();
   const { mutateAsync: submitReport } = useCreateReport();
 
-  const reports = [
-    {
-      id: 1,
-      title: 'Week 8 Progress Report',
-      submittedDate: '2024-06-18',
-      status: 'Reviewed',
-      feedback: 'Excellent progress on mobile app development'
-    },
-    {
-      id: 2,
-      title: 'Week 7 Progress Report',
-      submittedDate: '2024-06-11',
-      status: 'Reviewed',
-      feedback: 'Good understanding of React Native concepts'
-    },
-    {
-      id: 3,
-      title: 'Week 6 Progress Report',
-      submittedDate: '2024-06-04',
-      status: 'Pending Review',
-      feedback: null
-    }
-  ];
+  const reports = dashboardData?.reports || [];
 
 
   const getStatusVariant = (status: string) => {
@@ -105,7 +85,7 @@ const Reports = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-green-600">
-                {reports.filter(report => report.status === 'Reviewed').length}
+                {reports.filter(report => report.status === 'reviewed').length}
               </div>
             </CardContent>
           </Card>
@@ -115,7 +95,7 @@ const Reports = () => {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-yellow-600">
-                {reports.filter(report => report.status === 'Pending Review').length}
+                {reports.filter(report => report.status === 'pending').length}
               </div>
             </CardContent>
           </Card>
@@ -131,11 +111,11 @@ const Reports = () => {
               {reports.map((report) => (
                 <div key={report.id} className="flex items-start justify-between p-4 border rounded-lg">
                   <div className="space-y-2">
-                    <h4 className="font-semibold">{report.title}</h4>
+                    <h4 className="font-semibold">{report.report_title}</h4>
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <div className="flex items-center space-x-1">
                         <Calendar className="h-4 w-4" />
-                        <span>Submitted: {report.submittedDate}</span>
+                        <span>Submitted: {new Date(report.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
                     {report.feedback && (

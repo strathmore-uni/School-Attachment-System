@@ -20,8 +20,10 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useLogin } from "@/lib/auth/mutations";
+import { useAuth } from "@/lib/context";
 
 const Login = () => {
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [userRole, setUserRole] = useState("");
   const [email, setEmail] = useState("");
@@ -31,6 +33,7 @@ const Login = () => {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     if (!userRole || !email || !password) {
       toast({
         title: "Error",
@@ -41,13 +44,14 @@ const Login = () => {
     }
 
     try {
-      const {user, token} = await loginUser({
+      const result = await loginUser({
         role: userRole,
-        email: email,
-        password: password,
+        email,
+        password,
       });
 
-      console.log("User data:", user);
+      const user = result?.user;
+      const token = result?.token;
 
       if (!user || !token) {
         toast({
@@ -58,30 +62,29 @@ const Login = () => {
         return;
       }
 
-      // Store user data in localStorage
-      localStorage.setItem("userRole", userRole);
-      localStorage.setItem("email", email);
-      localStorage.setItem("userId", user.id.toString());
-      localStorage.setItem("userName", user.name);
+      login(token, user);
+
       localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userRole", user.role);
 
       toast({
         title: "Login Successful",
         description: `Welcome ${user.name} to Strathmore Attachment System`,
       });
 
-      // Navigate based on role
-      switch (userRole) {
+      switch (user.role) {
         case "student":
           navigate("/student-dashboard");
           break;
-        case "school-supervisor":
+        case "school_supervisor":
           navigate("/school-supervisor-dashboard");
           break;
-        case "host-supervisor":
+        case "host_supervisor":
           navigate("/host-supervisor-dashboard");
           break;
         case "administrator":
+        case "admin":
           navigate("/admin-dashboard");
           break;
         default:
@@ -95,40 +98,6 @@ const Login = () => {
       });
     }
   }
-
-  //       description: "Please fill in all fields",
-  //       variant: "destructive",
-  //     });
-  //     return;
-  //   }
-
-  //   // Store user role in localStorage for demo purposes
-  //   localStorage.setItem("userRole", userRole);
-  //   localStorage.setItem("username", username);
-
-  //   toast({
-  //     title: "Login Successful",
-  //     description: `Welcome to Strathmore Attachment System`,
-  //   });
-
-  //   // Navigate based on role
-  //   switch (userRole) {
-  //     case "student":
-  //       navigate("/student-dashboard");
-  //       break;
-  //     case "school-supervisor":
-  //       navigate("/school-supervisor-dashboard");
-  //       break;
-  //     case "host-supervisor":
-  //       navigate("/host-supervisor-dashboard");
-  //       break;
-  //     case "administrator":
-  //       navigate("/admin-dashboard");
-  //       break;
-  //     default:
-  //       navigate("/");
-  //   }
-  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center p-4">
@@ -159,7 +128,7 @@ const Login = () => {
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
                 <Select value={userRole} onValueChange={setUserRole}>
-                  <SelectTrigger aria-label="Select your role" id="role" name="role" autoCorrect="role">
+                  <SelectTrigger aria-label="Select your role" id="role" name="role">
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
                   <SelectContent>
@@ -176,7 +145,7 @@ const Login = () => {
                 <Input
                   id="email"
                   name="email"
-                  type="text"
+                  type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -204,29 +173,19 @@ const Login = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
+
               <div className="flex flex-col">
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700"
-                >
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
                   Sign In
                 </Button>
-
-                <p>
-                  Don't have an account?
-                  <Link
-                    to={"/register"}
-                    className="text-small-regular text-light-2 text-center mt-2"
-                  >
-                    register
+                <p className="mt-2 text-center text-sm text-gray-600">
+                  Don't have an account?{" "}
+                  <Link to="/register" className="text-blue-600 hover:underline">
+                    Register
                   </Link>
                 </p>
               </div>
